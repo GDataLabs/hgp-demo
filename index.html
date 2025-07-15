@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hidden Genius Project - AI Literacy Platform</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -27,141 +30,511 @@
         .transition-all {
             transition: all 0.3s ease;
         }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-preserve-3d { transform-style: preserve-3d; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .backface-hidden { backface-visibility: hidden; }
+        
+        .slider-amber::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fbbf24;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .slider-amber::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #fbbf24;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-amber-900 text-white min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="flex justify-center items-center gap-4 mb-6">
-                <img src="logos/hgp-logo.png" alt="Hidden Genius Project Logo" class="h-16 w-16 object-contain">
-                <img src="logos/gdata_day_trans.png" alt="GData Labs Logo" class="h-16 w-16 object-contain">
-            </div>
-            <h1 class="text-5xl font-bold mb-4 gradient-bg bg-clip-text text-transparent">#GeniusRevealed</h1>
-            <p class="text-xl text-amber-200 mb-2">AI Literacy & Leadership Platform</p>
-            <p class="text-lg text-gray-300">Empowering Black Youth Through Technology</p>
-        </header>
+<body>
+    <div id="root"></div>
 
-        <!-- Main Content -->
-        <main class="max-w-6xl mx-auto">
-            <!-- Platform Overview -->
-            <section class="mb-16">
-                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Interactive Learning Modules</h2>
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">AI Financial Literacy</h3>
-                            <p class="text-gray-300 mb-4">Learn how AI impacts your financial future and take control of your data value.</p>
-                            <a href="AIFinancialLiteracyApp.tsx" class="text-amber-400 hover:text-amber-300 font-semibold">Explore Module →</a>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Icons (simple SVG replacements)
+        const ChevronRight = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>;
+        const ChevronLeft = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>;
+        const Brain = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
+        const Users = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" /></svg>;
+        const DollarSign = () => <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" /></svg>;
+        const Sparkles = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
+        const Shield = () => <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
+        const Code = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>;
+        const Rocket = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>;
+
+        // Background Animation Component
+        const TitlePageBackground = () => {
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = canvas.offsetWidth;
+                let height = canvas.height = canvas.offsetHeight;
+                let circles = [];
+
+                const resize = () => {
+                    width = canvas.width = canvas.offsetWidth;
+                    height = canvas.height = canvas.offsetHeight;
+                };
+
+                class Circle {
+                    constructor() {
+                        this.pos = { x: Math.random() * width, y: Math.random() * height };
+                        this.size = Math.random() * 400 + 200;
+                        this.speed = { x: (Math.random() - 0.5) * 0.2, y: (Math.random() - 0.5) * 0.2 };
+                        const colors = [
+                            'hsla(45, 100%, 50%, 0.5)',
+                            'hsla(0, 0%, 0%, 0.3)',
+                            'hsla(210, 100%, 85%, 0.5)',
+                        ];
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.pos.x, this.pos.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = this.color;
+                        ctx.filter = 'blur(100px)';
+                        ctx.fill();
+                    }
+
+                    update() {
+                        this.pos.x += this.speed.x;
+                        this.pos.y += this.speed.y;
+
+                        if (this.pos.x > width + this.size || this.pos.x < -this.size) {
+                            this.speed.x *= -1;
+                        }
+                        if (this.pos.y > height + this.size || this.pos.y < -this.size) {
+                            this.speed.y *= -1;
+                        }
+                    }
+                }
+
+                const animate = () => {
+                    ctx.clearRect(0, 0, width, height);
+                    circles.forEach(circle => {
+                        circle.update();
+                        circle.draw();
+                    });
+                    requestAnimationFrame(animate);
+                };
+
+                for (let i = 0; i < 3; i++) {
+                    circles.push(new Circle());
+                }
+
+                window.addEventListener('resize', resize);
+                animate();
+
+                return () => window.removeEventListener('resize', resize);
+            }, []);
+
+            return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10"></canvas>;
+        };
+
+        // Main App Component
+        const HiddenGeniusApp = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [userDataValue, setUserDataValue] = useState(0);
+            const [selectedPrompt, setSelectedPrompt] = useState('');
+            const [aiResponse, setAiResponse] = useState('');
+
+            const nextSlide = () => setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
+            const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
+
+            const slides = [
+                {
+                    id: 'welcome',
+                    title: 'Welcome Geniuses',
+                    component: <TitleSlide onStart={nextSlide} />
+                },
+                {
+                    id: 'data-value',
+                    title: 'Your Data Has Value',
+                    component: <DataValueModule setUserDataValue={setUserDataValue} userDataValue={userDataValue} />
+                },
+                {
+                    id: 'ai-tools',
+                    title: 'AI Tools for Your Future',
+                    component: <AIToolsModule selectedPrompt={selectedPrompt} setSelectedPrompt={setSelectedPrompt} aiResponse={aiResponse} setAiResponse={setAiResponse} />
+                },
+                {
+                    id: 'your-genius',
+                    title: 'Your Genius Revealed',
+                    component: <GeniusRevealedModule />
+                }
+            ];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 to-amber-900 text-slate-100 overflow-hidden font-sans relative">
+                    {/* Header */}
+                    <header className="fixed top-0 w-full bg-black/80 backdrop-blur-lg z-50 px-6 py-3 border-b border-amber-500/30">
+                        <div className="max-w-7xl mx-auto flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-tr from-amber-500 to-amber-400 rounded-lg shadow-md">
+                                    <Brain />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-amber-400">Hidden Genius AI Platform</h1>
+                                    <p className="text-xs text-amber-200">Revealing Genius Through Technology</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm text-amber-200">The value of one, the power of all</div>
+                                <div className="flex gap-1.5">
+                                    {slides.map((_, index) => (
+                                        <div
+                                            key={index}
+                                            className={`h-2 transition-all duration-300 rounded-full ${
+                                                index === currentSlide ? 'w-8 bg-amber-400' : 'w-2 bg-slate-600'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="pt-28 pb-24 px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className={`bg-black/40 backdrop-blur-xl rounded-3xl p-8 shadow-xl min-h-[600px] border border-amber-500/30 ${currentSlide === 0 ? 'bg-transparent shadow-none border-none' : ''}`}>
+                                {currentSlide > 0 && (
+                                    <h2 className="text-4xl font-bold mb-8 text-center text-amber-400">
+                                        {slides[currentSlide].title}
+                                    </h2>
+                                )}
+                                <div className="slide-content">
+                                    {slides[currentSlide].component}
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Navigation */}
+                    <nav className="fixed bottom-0 w-full bg-black/80 backdrop-blur-lg px-6 py-3 border-t border-amber-500/30">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <button
+                                onClick={prevSlide}
+                                disabled={currentSlide === 0}
+                                className="flex items-center gap-2 px-4 py-2 bg-black/60 rounded-lg hover:bg-black/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-amber-500/30 text-amber-200"
+                            >
+                                <ChevronLeft />
+                                Previous
+                            </button>
+                            <div className="text-center">
+                                <p className="text-sm text-amber-200">Module {currentSlide + 1} of {slides.length}</p>
+                                <p className="text-xs text-amber-300/60">{slides[currentSlide].id}</p>
+                            </div>
+                            <button
+                                onClick={nextSlide}
+                                disabled={currentSlide === slides.length - 1}
+                                className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-amber-500 to-amber-400 text-black rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-md"
+                            >
+                                Next
+                                <ChevronRight />
+                            </button>
+                        </div>
+                    </nav>
+                    
+                    {/* Footer */}
+                    <footer className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-lg text-center py-2 text-xs text-amber-300/70 z-40">
+                        <p>© 2025 Hidden Genius Project & GData Labs. All rights reserved.</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // Title Slide Component
+        const TitleSlide = ({ onStart }) => {
+            return (
+                <div className="relative flex flex-col items-center justify-center h-full text-center -mt-16 overflow-hidden rounded-3xl">
+                    <TitlePageBackground />
+                    <div className="z-10">
+                        <div className="mb-8">
+                            <h1 className="text-6xl font-extrabold bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">#GeniusRevealed</h1>
+                            <p className="mt-4 text-3xl text-amber-200">AI Literacy & Leadership</p>
                         </div>
                         
-                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Hidden Genius Demo</h3>
-                            <p class="text-gray-300 mb-4">Experience the full Hidden Genius Project AI literacy curriculum.</p>
-                            <a href="hgp-demo.html" class="text-amber-400 hover:text-amber-300 font-semibold">Launch Demo →</a>
-                        </div>
+                        <p className="mt-4 text-2xl text-amber-300/80">Harness Technology, Lead Your Community</p>
                         
-                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">AI Literacy Module</h3>
-                            <p class="text-gray-300 mb-4">Deep dive into AI concepts, ethics, and practical applications.</p>
-                            <a href="hgp-ai-literacy.tsx" class="text-amber-400 hover:text-amber-300 font-semibold">Start Learning →</a>
+                        <div className="mt-12 max-w-md mx-auto text-lg space-y-2 text-amber-200/90">
+                            <p>"You have hidden genius within you."</p>
+                            <p className="font-bold">Today, we reveal it through technology and leadership.</p>
+                        </div>
+
+                        <button
+                            onClick={onStart}
+                            className="mt-16 px-10 py-4 bg-gradient-to-r from-amber-500 to-amber-400 text-black text-xl font-bold rounded-lg shadow-lg hover:scale-105 transition-transform"
+                        >
+                            Begin Your Journey
+                        </button>
+
+                        <div className="mt-12 flex items-center gap-8 text-amber-300/70">
+                            <div className="flex items-center gap-2">
+                                <Users />
+                                <span>Brotherhood</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Code />
+                                <span>Technology</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Rocket />
+                                <span>Leadership</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            );
+        };
 
-            <!-- Featured Content -->
-            <section class="mb-16">
-                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Featured Resources</h2>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-4">🎥 Introduction Video</h3>
-                            <video controls class="w-full rounded-lg mb-4">
-                                <source src="ai_avatar_video/AILP3 Intro.mp4" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                            <p class="text-gray-300">Watch our introduction to the AILP3 program and discover how AI literacy empowers communities.</p>
+        // Data Value Module
+        const DataValueModule = ({ setUserDataValue, userDataValue }) => {
+            const [appUsage, setAppUsage] = useState({ tiktok: 3, instagram: 2, youtube: 2, spotify: 1 });
+
+            useEffect(() => {
+                const total = Object.values(appUsage).reduce((sum, hours) => sum + hours, 0);
+                setUserDataValue(total * 20);
+            }, [appUsage, setUserDataValue]);
+
+            return (
+                <div className="space-y-12">
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-bold flex items-center gap-2 text-amber-400">
+                                <DollarSign />
+                                Your Data Calculator
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                {Object.entries(appUsage).map(([app, hours]) => (
+                                    <div key={app} className="space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="capitalize text-lg text-amber-200">{app}</span>
+                                            <span className="text-amber-400 font-mono">{hours}h/day</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="8"
+                                            value={hours}
+                                            onChange={(e) => setAppUsage({...appUsage, [app]: parseInt(e.target.value)})}
+                                            className="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer slider-amber"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-6 rounded-2xl text-black shadow-lg">
+                                <p className="text-sm font-bold uppercase">Your Annual Data Value</p>
+                                <p className="text-4xl font-bold">${(userDataValue * 365).toLocaleString()}</p>
+                                <p className="text-sm mt-2 font-semibold">Time to control and monetize YOUR data!</p>
+                            </div>
                         </div>
                         
-                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-4">🎧 Podcast Episode</h3>
-                            <audio controls class="w-full mb-4">
-                                <source src="ai_podcasts/TheHiddenGeniusProject_EmpoweringYouthinAI.wav" type="audio/wav">
-                                Your browser does not support the audio element.
-                            </audio>
-                            <p class="text-gray-300">Listen to insights about empowering youth through AI education and responsible technology use.</p>
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-bold text-center text-amber-400">Your Data = Your Digital Legacy</h3>
+                            <div className="bg-black/60 p-6 rounded-2xl border border-amber-500/30 space-y-4">
+                                <h4 className="text-lg font-bold text-amber-400">Tech Giants vs. Hidden Geniuses</h4>
+                                <div className="space-y-3 text-amber-200">
+                                    <p>🏦 <strong>Meta:</strong> Makes $32 per user quarterly from YOUR data</p>
+                                    <p>🎵 <strong>TikTok:</strong> Your creativity fuels a $75B AI company</p>
+                                    <p>📸 <strong>Instagram:</strong> Your photos train their image recognition</p>
+                                    <p className="pt-3 text-amber-400 font-bold">But what if WE controlled the data economy?</p>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-gradient-to-r from-green-600/20 to-amber-600/20 p-6 rounded-2xl border border-green-500/30">
+                                <h4 className="text-lg font-bold mb-3 text-green-400">The Hidden Genius Way</h4>
+                                <ul className="space-y-2 text-amber-200">
+                                    <li>✓ Build platforms that empower creators</li>
+                                    <li>✓ Design ethical AI systems</li>
+                                    <li>✓ Code solutions for our communities</li>
+                                    <li>✓ Lead the next generation of tech leaders</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            );
+        };
 
-            <!-- Interactive Demos -->
-            <section class="mb-16">
-                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Interactive Experiences</h2>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Atlanta Chronicles</h3>
-                            <p class="text-gray-300 mb-4">Explore Atlanta's tech scene through interactive storytelling and community connections.</p>
-                            <a href="atl_chronicles/atl_chronicles.html" class="text-amber-400 hover:text-amber-300 font-semibold">Enter Chronicles →</a>
-                        </div>
-                        
-                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Earth Visualization</h3>
-                            <p class="text-gray-300 mb-4">Experience global connectivity and data flow through interactive 3D visualization.</p>
-                            <a href="earth.html" class="text-amber-400 hover:text-amber-300 font-semibold">Explore Earth →</a>
+        // AI Tools Module
+        const AIToolsModule = ({ selectedPrompt, setSelectedPrompt, aiResponse, setAiResponse }) => {
+            const [isLoading, setIsLoading] = useState(false);
+            
+            const prompts = [
+                "How can I use AI to create content for my social media?",
+                "What AI tools can help me learn to code?",
+                "How do I use AI to start a business?",
+                "What AI skills should I learn for my future career?"
+            ];
+
+            const handlePromptSelect = (prompt) => {
+                setSelectedPrompt(prompt);
+                setIsLoading(true);
+                setAiResponse('');
+
+                setTimeout(() => {
+                    const responses = {
+                        "How can I use AI to create content for my social media?": "AI can revolutionize your content creation! Use tools like ChatGPT for captions, Canva's AI for graphics, and Loom for video scripts. The key is to maintain your authentic voice while letting AI handle the repetitive work. You can create week's worth of content in hours! 🚀",
+                        "What AI tools can help me learn to code?": "GitHub Copilot writes code with you, Replit's AI explains concepts, and ChatGPT debugs your errors. Start with Python - it's beginner-friendly and powerful for AI projects. Remember: AI doesn't replace programmers, it makes us more powerful! 💻",
+                        "How do I use AI to start a business?": "AI can validate your business idea, create marketing content, build basic websites, and even help with customer service. Use tools like Jasper for marketing copy, Midjourney for logos, and ChatGPT for business planning. The Hidden Genius way: solve problems in YOUR community first! 🏆",
+                        "What AI skills should I learn for my future career?": "Focus on prompt engineering, data analysis, and understanding AI ethics. Learn Python basics, get familiar with ChatGPT and similar tools, and understand how AI impacts your industry. Most importantly: learn to be the bridge between AI and human creativity! 🌟"
+                    };
+                    setAiResponse(responses[prompt] || "Great question! AI is transforming every industry. The key is to start experimenting and building projects that matter to your community.");
+                    setIsLoading(false);
+                }, 1200);
+            };
+
+            return (
+                <div className="space-y-8">
+                    <div className="text-center mb-6">
+                        <p className="text-xl text-amber-200">🤖 AI tools designed to amplify your genius</p>
+                    </div>
+                    
+                    <div className="bg-black/60 p-6 rounded-2xl space-y-4 border border-amber-500/30">
+                        <h3 className="text-xl font-bold text-amber-400">Ask the AI Assistant:</h3>
+                        <div className="space-y-2">
+                            {prompts.map((prompt) => (
+                                <button
+                                    key={prompt}
+                                    onClick={() => handlePromptSelect(prompt)}
+                                    className={`w-full text-left p-3 rounded-lg transition-all ${
+                                        selectedPrompt === prompt 
+                                            ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-black' 
+                                            : 'bg-black/60 hover:bg-black/80 text-amber-200 border border-amber-500/30'
+                                    }`}
+                                >
+                                    {prompt}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <!-- Mission Statement -->
-            <section class="mb-16">
-                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30 text-center">
-                    <h2 class="text-3xl font-bold mb-6 text-amber-400">Our Mission</h2>
-                    <blockquote class="text-xl italic text-amber-200 mb-4">
-                        "You have hidden genius within you. Today, we reveal it through technology and leadership."
-                    </blockquote>
-                    <p class="text-lg text-gray-300 max-w-4xl mx-auto">
-                        The Hidden Genius Project is transforming the lives of young Black males by providing technology training, 
-                        leadership development, and career opportunities. Through our AI literacy initiatives, we're preparing 
-                        the next generation to not just use technology, but to lead and shape it.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Partnership -->
-            <section class="mb-16">
-                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
-                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Powered by Community</h2>
-                    <div class="grid md:grid-cols-3 gap-6 text-center">
-                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Education</h3>
-                            <p class="text-gray-300">Comprehensive AI literacy curriculum designed for young leaders</p>
-                        </div>
-                        
-                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Community</h3>
-                            <p class="text-gray-300">Building networks of support and mentorship for sustained growth</p>
-                        </div>
-                        
-                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
-                            <h3 class="text-xl font-bold text-amber-400 mb-3">Innovation</h3>
-                            <p class="text-gray-300">Creating solutions that serve and uplift our communities</p>
-                        </div>
+                    
+                    <div className="bg-black/60 p-6 rounded-2xl border border-amber-500/30 min-h-[120px] flex items-center justify-center">
+                        {isLoading && (
+                            <div className="flex items-center gap-3 text-amber-400">
+                                <div className="w-5 h-5 border-2 border-t-transparent border-amber-400 rounded-full animate-spin"></div>
+                                <span>AI thinking...</span>
+                            </div>
+                        )}
+                        {!isLoading && aiResponse && (
+                            <div>
+                                <h4 className="text-lg font-bold mb-3 flex items-center gap-2 text-amber-400">
+                                    <Sparkles />
+                                    AI Response:
+                                </h4>
+                                <p className="text-amber-200 whitespace-pre-wrap">{aiResponse}</p>
+                            </div>
+                        )}
+                        {!isLoading && !aiResponse && (
+                            <p className="text-amber-300">Select a prompt to see AI in action!</p>
+                        )}
                     </div>
                 </div>
-            </section>
-        </main>
+            );
+        };
 
-        <!-- Footer -->
-        <footer class="text-center text-gray-400 mt-16">
-            <div class="border-t border-amber-500/30 pt-8">
-                <p class="mb-2">© 2024 Hidden Genius Project & GData Labs. All rights reserved.</p>
-                <p class="text-sm">Empowering the next generation of tech leaders through AI literacy and community engagement.</p>
-            </div>
-        </footer>
-    </div>
+        // Genius Revealed Module
+        const GeniusRevealedModule = () => {
+            const [commitment, setCommitment] = useState({ skill: '', project: '', impact: '' });
+            const [isCommitted, setIsCommitted] = useState(false);
+
+            const handleCommit = () => {
+                if (commitment.skill && commitment.project && commitment.impact) {
+                    setIsCommitted(true);
+                }
+            };
+
+            return (
+                <div className="space-y-8">
+                    <div className="text-center mb-8">
+                        <h3 className="text-2xl mb-4 text-amber-400">#GeniusRevealed - Your Tech Leadership Commitment</h3>
+                        <p className="text-lg text-amber-200">Transform your genius into action</p>
+                    </div>
+                    
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="bg-black/60 p-6 rounded-2xl space-y-4 border border-amber-500/30">
+                            <h4 className="text-xl font-bold text-amber-400 mb-4">My Genius Commitment</h4>
+                            
+                            <label className="block">
+                                <span className="text-sm text-amber-300">One AI skill I'll master this month:</span>
+                                <input
+                                    type="text"
+                                    value={commitment.skill}
+                                    onChange={(e) => setCommitment({...commitment, skill: e.target.value})}
+                                    className="mt-2 w-full px-4 py-2 bg-black/60 border border-amber-500/30 rounded-lg focus:border-amber-400 focus:outline-none text-amber-200"
+                                    placeholder="e.g., Prompt engineering, Python basics"
+                                />
+                            </label>
+                            
+                            <label className="block">
+                                <span className="text-sm text-amber-300">One project I'll build for my community:</span>
+                                <input
+                                    type="text"
+                                    value={commitment.project}
+                                    onChange={(e) => setCommitment({...commitment, project: e.target.value})}
+                                    className="mt-2 w-full px-4 py-2 bg-black/60 border border-amber-500/30 rounded-lg focus:border-amber-400 focus:outline-none text-amber-200"
+                                    placeholder="e.g., AI tutor app, Community resource finder"
+                                />
+                            </label>
+                            
+                            <label className="block">
+                                <span className="text-sm text-amber-300">The impact I want to create:</span>
+                                <input
+                                    type="text"
+                                    value={commitment.impact}
+                                    onChange={(e) => setCommitment({...commitment, impact: e.target.value})}
+                                    className="mt-2 w-full px-4 py-2 bg-black/60 border border-amber-500/30 rounded-lg focus:border-amber-400 focus:outline-none text-amber-200"
+                                    placeholder="e.g., Help 100 students learn coding"
+                                />
+                            </label>
+                            
+                            <button
+                                onClick={handleCommit}
+                                disabled={!Object.values(commitment).every(val => val.trim())}
+                                className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-400 text-black rounded-lg hover:opacity-90 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Make My Commitment
+                            </button>
+                        </div>
+                        
+                        {isCommitted && (
+                            <div className="bg-gradient-to-r from-green-500 to-amber-500 p-0.5 rounded-2xl shadow-md">
+                                <div className="bg-black/90 p-6 rounded-2xl text-center">
+                                    <p className="text-2xl font-bold text-amber-400 mb-2">🔥 Genius Revealed! 🔥</p>
+                                    <p className="text-amber-200">Welcome to the brotherhood of tech leaders building the future!</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="text-center">
+                        <blockquote className="text-center">
+                            <p className="text-2xl font-semibold italic mb-2 text-amber-300">"Your genius was never hidden. It was just waiting for the right moment to shine."</p>
+                            <cite className="text-lg text-amber-400">- You, today</cite>
+                        </blockquote>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the App
+        ReactDOM.render(<HiddenGeniusApp />, document.getElementById('root'));
+    </script>
 </body>
 </html>
