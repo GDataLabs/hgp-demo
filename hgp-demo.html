@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidden Genius Project - AI Literacy & Leadership</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* HGP Brand Colors - Dark Theme */
+        :root {
+            --hgp-gold: #FFD700;
+            --hgp-gold-light: #FFCC00;
+            --hgp-gold-gradient: linear-gradient(135deg, #FFCC00 0%, #FFF2D0 100%);
+            --hgp-black: #000000;
+            --hgp-charcoal: #1A1A1A;
+            --hgp-gray: #2E2E2E;
+            --hgp-gray-light: #6B6B6B;
+            --hgp-silver: #B0B0B0;
+            --hgp-white: #FFFFFF;
+            --hgp-text-primary: #FFFFFF;
+            --hgp-text-secondary: #E0E0E0;
+            --hgp-text-tertiary: #B0B0B0;
+        }
+        
+        .slider-gold::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--hgp-gold);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .slider-gold::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--hgp-gold);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Custom HGP Styles */
+        .hgp-gold-gradient {
+            background: var(--hgp-gold-gradient);
+        }
+        
+        .hgp-text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hgp-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #2E2E2E 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        
+        .hgp-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFCC00 100%);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .hgp-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        /* Enhanced background pattern - Light Theme */
+        .hgp-bg-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.04) 0%, transparent 50%);
+        }
+        
+        /* Improved text styling - Light Theme */
+        .hgp-heading-gold {
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        
+        /* Better card styling */
+        .hgp-stats-card {
+            background: linear-gradient(145deg, #1A1A1A 0%, #2E2E2E 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-preserve-3d { transform-style: preserve-3d; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .backface-hidden { backface-visibility: hidden; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Simple icon components 
+        const ChevronRight = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+        );
+
+        const ChevronLeft = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+        );
+
+        const Brain = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+        );
+
+        const Users = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        );
+
+        const DollarSign = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+        );
+
+        const Shield = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+        );
+
+        const Code = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+        );
+
+        const Rocket = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        );
+
+        const Briefcase = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2v-6a2 2 0 00-2-2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12V6a4 4 0 00-4-4H8a4 4 0 00-4 4v6" />
+            </svg>
+        );
+
+        const Car = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-5h-4l-2 5h2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H4l-2-5h4l2 5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 16v-5" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9z" />
+            </svg>
+        );
+
+        const Scale = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 12h12l3-12H3zm18 0L12 2 6 6" />
+            </svg>
+        );
+
+        const TextIcon = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+        );
+
+        const ImageIcon = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1.586-1.586a2 2 0 00-2.828 0L6 18" />
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            </svg>
+        );
+
+        const AudioIcon = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
+            </svg>
+        );
+
+        const VideoIcon = ({ className }) => (
+            <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+        );
+
+        const Quote = ({ text, author }) => (
+            <blockquote className="text-center">
+                <p className="text-2xl font-semibold italic mb-2 text-yellow-300">"{text}"</p>
+                <cite className="text-lg text-yellow-400">- {author}</cite>
+            </blockquote>
+        );
+
+        // Simplified HGP App
+        const HGPApp = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [pollData, setPollData] = useState([]);
+            const [inputApps, setInputApps] = useState('');
+            const [inputHours, setInputHours] = useState('');
+            
+            // Data Dignity Calculator states
+            const [dataPosts, setDataPosts] = useState(5);
+            const [dataMedia, setDataMedia] = useState(3);
+            const [dataApps, setDataApps] = useState(15);
+            const [dataHours, setDataHours] = useState(4);
+            const [flippedScenario, setFlippedScenario] = useState(null);
+            const [hoveredCard, setHoveredCard] = useState(null);
+            const [dignityMeter, setDignityMeter] = useState(0);
+
+            // Scroll to top whenever slide changes
+            useEffect(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, [currentSlide]);
+
+            // Update dignity meter based on commitment inputs
+            const updateDignityMeter = () => {
+                const goal1 = document.getElementById('ai-goal-1')?.value || '';
+                const goal2 = document.getElementById('ai-goal-2')?.value || '';
+                const goal3 = document.getElementById('ai-goal-3')?.value || '';
+                
+                let score = 0;
+                if (goal1.trim().length > 10) score += 33;
+                if (goal2.trim().length > 10) score += 33;
+                if (goal3.trim().length > 10) score += 34;
+                
+                setDignityMeter(score);
+            };
+
+            const nextSlide = () => {
+                setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            const prevSlide = () => {
+                setCurrentSlide((prev) => Math.max(prev - 1, 0));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleAddData = () => {
+                const apps = parseInt(inputApps);
+                const hours = parseFloat(inputHours);
+                if (!isNaN(apps) && !isNaN(hours) && apps >= 0 && apps <= 50 && hours >= 0 && hours <= 24) {
+                    setPollData(prev => [...prev, { apps, hours, id: Date.now() }]);
+                    setInputApps('');
+                    setInputHours('');
+                }
+            };
+
+            // Calculate correlation and stats
+            const totalResponses = pollData.length;
+            const avgApps = totalResponses > 0 ? (pollData.reduce((sum, item) => sum + item.apps, 0) / totalResponses).toFixed(1) : 0;
+            const avgHours = totalResponses > 0 ? (pollData.reduce((sum, item) => sum + item.hours, 0) / totalResponses).toFixed(1) : 0;
+            
+            // Simple correlation calculation
+            const correlation = totalResponses > 1 ? (() => {
+                const meanApps = pollData.reduce((sum, item) => sum + item.apps, 0) / totalResponses;
+                const meanHours = pollData.reduce((sum, item) => sum + item.hours, 0) / totalResponses;
+                
+                const numerator = pollData.reduce((sum, item) => sum + (item.apps - meanApps) * (item.hours - meanHours), 0);
+                const denomApps = pollData.reduce((sum, item) => sum + Math.pow(item.apps - meanApps, 2), 0);
+                const denomHours = pollData.reduce((sum, item) => sum + Math.pow(item.hours - meanHours, 2), 0);
+                
+                return denomApps * denomHours > 0 ? numerator / Math.sqrt(denomApps * denomHours) : 0;
+            })() : 0;
+
+            // Usage zone classification
+            const getUsageZone = (apps, hours) => {
+                if (apps <= 8 && hours <= 2) return 'low';
+                if (apps <= 20 && hours <= 6) return 'moderate';
+                return 'high';
+            };
+
+            // Common combinations analysis
+            const commonCombos = pollData.reduce((acc, point) => {
+                const key = `${Math.floor(point.apps/3)*3}-${Math.floor(point.hours/2)*2}`;
+                acc[key] = (acc[key] || 0) + 1;
+                return acc;
+            }, {});
+
+            const topCombo = Object.entries(commonCombos).sort((a, b) => b[1] - a[1])[0];
+
+            // Zone distribution
+            const zoneDistribution = pollData.reduce((acc, point) => {
+                const zone = getUsageZone(point.apps, point.hours);
+                acc[zone] = (acc[zone] || 0) + 1;
+                return acc;
+            }, { low: 0, moderate: 0, high: 0 });
+
+            const slides = [
+                {
+                    title: "#GeniusRevealed",
+                    subtitle: "AI Literacy & Leadership",
+                    content: (
+                        <div className="text-center space-y-8">
+                            <div className="mb-8">
+                                <h1 className="text-7xl font-extrabold mb-4" style={{background: 'linear-gradient(135deg, #FFD700 0%, #FFCC00 50%, #FFD700 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '2px 2px 4px rgba(0,0,0,0.1)'}}>#GeniusRevealed</h1>
+                                <p className="text-4xl font-bold" style={{color: '#FFCC00', textShadow: '1px 1px 2px rgba(0,0,0,0.1)'}}>AI Literacy & Leadership</p>
+                            </div>
+                            
+                            <p className="mt-6 text-2xl font-medium" style={{color: 'var(--hgp-text-primary)'}}>Harness Technology, Lead Your Community</p>
+                            
+                            <div className="mt-12 max-w-lg mx-auto text-xl space-y-3" style={{color: 'var(--hgp-text-primary)'}}>
+                                <p>"You have hidden genius within you."</p>
+                                <p className="font-bold">Today, we reveal it through technology and leadership.</p>
+                            </div>
+
+                            <div className="mt-8">
+                                <video className="w-full max-w-lg mx-auto rounded-lg shadow-lg" controls>
+                                    <source src="ai_avatar_video/AILP3 Intro.mp4" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+
+                            <div className="mt-16 flex items-center gap-12 justify-center" style={{color: '#FFD700'}}>
+                                <div className="flex items-center gap-2">
+                                    <Users className="w-5 h-5" />
+                                    <span>Brotherhood</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Code className="w-5 h-5" />
+                                    <span>Technology</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Rocket className="w-5 h-5" />
+                                    <span>Leadership</span>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Brotherhood Tech Check",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <p className="text-2xl mb-4" style={{color: 'var(--hgp-text-primary)'}}>💪🏿 Brotherhood Check: Apps vs. Screen Time</p>
+                                <div className="inline-flex items-center gap-3 hgp-card px-6 py-3 rounded-full border border-yellow-500/30">
+                                    <Brain className="w-5 h-5 text-yellow-400" />
+                                    <span className="text-lg" style={{color: 'var(--hgp-text-secondary)'}}>Real-time correlation analysis</span>
+                                </div>
+                            </div>
+                            
+                            <div className="max-w-md mx-auto">
+                                <div className="hgp-card p-6 rounded-2xl space-y-4 border border-yellow-500/30">
+                                    <h3 className="text-lg font-bold text-yellow-400">Each Genius Reports:</h3>
+                                    <p className="" style={{color: 'var(--hgp-text-secondary)'}}>"How many apps did you use yesterday and how many hours on your phone?"</p>
+                                    
+                                    <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="number"
+                                                value={inputApps}
+                                                onChange={(e) => setInputApps(e.target.value)}
+                                                placeholder="# of apps"
+                                                min="0"
+                                                max="50"
+                                                className="flex-1 px-4 py-2 hgp-card border border-yellow-500/30 rounded-lg focus:border-yellow-300 focus:ring-2 focus:ring-yellow-400/50 focus:outline-none text-lg font-mono text-center" style={{color: 'var(--hgp-text-primary)'}}
+                                            />
+                                            <input
+                                                type="number"
+                                                value={inputHours}
+                                                onChange={(e) => setInputHours(e.target.value)}
+                                                placeholder="Hours"
+                                                min="0"
+                                                max="24"
+                                                step="0.5"
+                                                className="flex-1 px-4 py-2 hgp-card border border-yellow-500/30 rounded-lg focus:border-yellow-300 focus:ring-2 focus:ring-yellow-400/50 focus:outline-none text-lg font-mono text-center" style={{color: 'var(--hgp-text-primary)'}}
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={handleAddData}
+                                            className="w-full px-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}
+                                        >
+                                            Add to Brotherhood Data
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="text-sm text-yellow-600">
+                                        Geniuses surveyed: <span className="text-yellow-400 font-bold">{totalResponses}</span>
+                                        {totalResponses >= 5 && <span className="ml-2 text-green-400">🔥 Data flowing!</span>}
+                                        {totalResponses >= 15 && <span className="ml-2 text-green-400">📊 Pattern emerging!</span>}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Enhanced Large Scatter Plot */}
+                            {totalResponses > 0 && (
+                                <div className="hgp-card p-8 rounded-2xl border border-yellow-500/30">
+                                    <h3 className="text-2xl font-bold mb-6 text-yellow-400 text-center">Live Brotherhood Data Analysis</h3>
+                                    
+                                    {/* Large Interactive Plot with Side Legends */}
+                                    <div className="flex gap-6">
+                                        {/* Main Plot Area */}
+                                        <div className="flex-1 relative bg-black/90 p-6 rounded-lg border border-yellow-500/20" style={{height: '600px'}}>
+                                            <svg width="100%" height="100%" viewBox="0 0 700 520">
+                                            {/* Background Usage Zones */}
+                                            {/* Low Usage Zone (Green) */}
+                                            <rect x="60" y="340" width="140" height="120" fill="#065f46" opacity="0.2" rx="8"/>
+                                            
+                                            {/* Moderate Usage Zone (Yellow) */}
+                                            <rect x="160" y="180" width="280" height="280" fill="#d97706" opacity="0.15" rx="8"/>
+                                            
+                                            {/* High Usage Zone (Red) */}
+                                            <rect x="360" y="40" width="280" height="280" fill="#dc2626" opacity="0.2" rx="8"/>
+                                            
+                                            {/* Grid lines */}
+                                            {[0, 5, 10, 15, 20, 25, 30, 35, 40].map(i => (
+                                                <g key={`grid-x-${i}`}>
+                                                    <line x1={i * 15 + 60} y1="40" x2={i * 15 + 60} y2="460" stroke="#374151" strokeWidth="1" opacity="0.2"/>
+                                                    <text x={i * 15 + 60} y="480" textAnchor="middle" fontSize="11" fill="#fbbf24">{i}</text>
+                                                </g>
+                                            ))}
+                                            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(i => (
+                                                <g key={`grid-y-${i}`}>
+                                                    <line x1="60" y1={460 - i * 32} x2="660" y2={460 - i * 32} stroke="#374151" strokeWidth="1" opacity="0.2"/>
+                                                    <text x="45" y={465 - i * 32} textAnchor="middle" fontSize="11" fill="#fbbf24">{i}</text>
+                                                </g>
+                                            ))}
+                                            
+                                            
+                                            {/* Data points with zone-based coloring */}
+                                            {pollData.map((point, index) => {
+                                                const zone = getUsageZone(point.apps, point.hours);
+                                                const colors = {
+                                                    low: '#10b981',
+                                                    moderate: '#f59e0b', 
+                                                    high: '#ef4444'
+                                                };
+                                                const x = Math.min(point.apps * 15 + 60, 660);
+                                                const y = Math.max(460 - point.hours * 32, 40);
+                                                
+                                                return (
+                                                    <g key={point.id}>
+                                                        <circle
+                                                            cx={x}
+                                                            cy={y}
+                                                            r="8"
+                                                            fill={colors[zone]}
+                                                            stroke="#000"
+                                                            strokeWidth="2"
+                                                            opacity="0.8"
+                                                        >
+                                                            <animate attributeName="r" values="0;8;8" dur="0.6s" begin={`${index * 0.15}s`}/>
+                                                        </circle>
+                                                        <text x={x} y={y-12} textAnchor="middle" fontSize="9" fill="#fbbf24" fontWeight="bold">
+                                                            {point.apps},{point.hours}h
+                                                        </text>
+                                                    </g>
+                                                );
+                                            })}
+                                            
+                                            {/* Trend line with enhanced styling */}
+                                            {totalResponses > 4 && Math.abs(correlation) > 0.3 && (
+                                                <g>
+                                                    <line 
+                                                        x1="80" 
+                                                        y1={correlation > 0 ? "400" : "80"} 
+                                                        x2="620" 
+                                                        y2={correlation > 0 ? "80" : "400"} 
+                                                        stroke="#10b981" 
+                                                        strokeWidth="4" 
+                                                        opacity="0.8"
+                                                        strokeDasharray="8,4"
+                                                    />
+                                                    <text x="350" y={correlation > 0 ? "230" : "260"} textAnchor="middle" fontSize="12" fill="#10b981" fontWeight="bold">
+                                                        Correlation: {(correlation * 100).toFixed(0)}%
+                                                    </text>
+                                                </g>
+                                            )}
+                                            
+                                            {/* Axis Labels */}
+                                            <text x="360" y="500" textAnchor="middle" fontSize="16" fill="#fbbf24" fontWeight="bold">Number of Apps Used Yesterday</text>
+                                            <text x="25" y="250" textAnchor="middle" fontSize="16" fill="#fbbf24" fontWeight="bold" transform="rotate(-90 25 250)">Hours on Phone</text>
+                                            
+                                            {/* Title */}
+                                            <text x="360" y="25" textAnchor="middle" fontSize="18" fill="#fbbf24" fontWeight="bold">Brotherhood Digital Behavior Analysis</text>
+                                        </svg>
+                                        </div>
+                                        
+                                        {/* Side Legends Panel */}
+                                        <div className="w-64 space-y-4">
+                                            {/* Zone Legend */}
+                                            <div className="bg-black/80 p-4 rounded-lg border border-yellow-500/30">
+                                                <h4 className="text-yellow-400 font-bold mb-3 text-sm">📊 Usage Zones</h4>
+                                                
+                                                <div className="space-y-3">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-4 h-4 bg-green-500 rounded mt-0.5"></div>
+                                                        <div>
+                                                            <p className="text-green-400 font-bold text-xs">LOW USAGE</p>
+                                                            <p className="text-green-300 text-xs">≤8 apps, ≤2hrs</p>
+                                                            <p className="text-green-200 text-xs">Tech serves you</p>
+                                                            <p className="text-green-100 text-xs">🧠 > 🤖</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-4 h-4 bg-yellow-500 rounded mt-0.5"></div>
+                                                        <div>
+                                                            <p className="text-yellow-400 font-bold text-xs">MEDIUM USAGE</p>
+                                                            <p className="text-yellow-300 text-xs">9-20 apps, 2-6hrs</p>
+                                                            <p className="text-yellow-200 text-xs">Some influence</p>
+                                                            <p className="text-yellow-100 text-xs">⚖️ Mixed control</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="w-4 h-4 bg-red-500 rounded mt-0.5"></div>
+                                                        <div>
+                                                            <p className="text-red-400 font-bold text-xs">HIGH USAGE</p>
+                                                            <p className="text-red-300 text-xs">21+ apps, 6+ hrs</p>
+                                                            <p className="text-red-200 text-xs">Algorithm capture</p>
+                                                            <p className="text-red-100 text-xs">📱💸 = 🤖💰</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Insights Panel */}
+                                            <div className="bg-black/80 p-4 rounded-lg border border-purple-500/30">
+                                                <h4 className="text-purple-400 font-bold mb-3 text-sm">🔍 Live Insights</h4>
+                                                
+                                                <div className="space-y-2 text-xs">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-yellow-300">Geniuses:</span>
+                                                        <span className="text-yellow-400 font-bold">{totalResponses}</span>
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between">
+                                                        <span className="text-green-300">🟢 Low:</span>
+                                                        <span className="text-green-400 font-bold">{zoneDistribution.low}</span>
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between">
+                                                        <span className="text-yellow-300">🟡 Medium:</span>
+                                                        <span className="text-yellow-400 font-bold">{zoneDistribution.moderate}</span>
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between">
+                                                        <span className="text-red-300">🔴 High:</span>
+                                                        <span className="text-red-400 font-bold">{zoneDistribution.high}</span>
+                                                    </div>
+                                                    
+                                                    {totalResponses > 3 && (
+                                                        <div className="mt-3 pt-3 border-t border-purple-500/30">
+                                                            <p className="text-purple-300 font-bold">Status:</p>
+                                                            <p className="text-purple-200 text-xs mt-1">
+                                                                {zoneDistribution.high > totalResponses * 0.6 ? "⚠️ Algorithm Capture" :
+                                                                 zoneDistribution.moderate > totalResponses * 0.5 ? "⚖️ In Balance" :
+                                                                 zoneDistribution.low > totalResponses * 0.4 ? "🎯 Digital Mindfulness" :
+                                                                 "📊 Mixed Patterns"}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {topCombo && topCombo[1] > 1 && (
+                                                        <div className="mt-3 pt-3 border-t border-yellow-500/30">
+                                                            <p className="text-yellow-400 font-bold">Most Common:</p>
+                                                            <p className="text-yellow-300 text-xs">{topCombo[1]} geniuses cluster</p>
+                                                            <p className="text-yellow-200 text-xs">Algorithm influence!</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Correlation Strength */}
+                                            {totalResponses > 3 && (
+                                                <div className="bg-black/80 p-4 rounded-lg border border-green-500/30">
+                                                    <h4 className="text-green-400 font-bold mb-3 text-sm">📈 Pattern Strength</h4>
+                                                    
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-green-300 text-xs">Correlation:</span>
+                                                            <span className="text-green-400 font-bold text-sm">{(correlation * 100).toFixed(0)}%</span>
+                                                        </div>
+                                                        
+                                                        <div className="w-full bg-gray-700 rounded-full h-2">
+                                                            <div 
+                                                                className="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                                                                style={{width: `${Math.abs(correlation) * 100}%`}}
+                                                            ></div>
+                                                        </div>
+                                                        
+                                                        <p className="text-green-200 text-xs mt-2">
+                                                            {Math.abs(correlation) > 0.7 ? "🔥 Very Strong Pattern!" :
+                                                             Math.abs(correlation) > 0.5 ? "📈 Strong Correlation" :
+                                                             Math.abs(correlation) > 0.3 ? "📊 Moderate Link" :
+                                                             "📋 Weak Connection"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Enhanced Statistics Panel */}
+                                    <div className="grid md:grid-cols-4 gap-4 mt-6">
+                                        <div className="hgp-card p-4 rounded-lg text-center border border-yellow-500/30">
+                                            <p className="text-2xl font-bold text-yellow-400">{avgApps}</p>
+                                            <p className="text-sm text-yellow-200">Avg Apps/Genius</p>
+                                            <p className="text-xs text-yellow-300 mt-1">
+                                                {avgApps < 10 ? "🟢 Mindful" : avgApps < 20 ? "🟡 Balanced" : "🔴 Heavy"}
+                                            </p>
+                                        </div>
+                                        <div className="hgp-card p-4 rounded-lg text-center border border-yellow-500/30">
+                                            <p className="text-2xl font-bold text-yellow-400">{avgHours}h</p>
+                                            <p className="text-sm text-yellow-200">Avg Hours/Genius</p>
+                                            <p className="text-xs text-yellow-300 mt-1">
+                                                {avgHours < 3 ? "🟢 Controlled" : avgHours < 6 ? "🟡 Moderate" : "🔴 Excessive"}
+                                            </p>
+                                        </div>
+                                        <div className="hgp-card p-4 rounded-lg text-center border border-yellow-500/30">
+                                            <p className="text-2xl font-bold text-yellow-400">{(correlation * 100).toFixed(0)}%</p>
+                                            <p className="text-sm text-yellow-200">Correlation</p>
+                                            <p className="text-xs text-yellow-300 mt-1">
+                                                {Math.abs(correlation) > 0.7 ? "🔥 Very Strong" : Math.abs(correlation) > 0.5 ? "📈 Strong" : Math.abs(correlation) > 0.3 ? "📊 Moderate" : "📋 Weak"}
+                                            </p>
+                                        </div>
+                                        <div className="hgp-card p-4 rounded-lg text-center border border-yellow-500/30">
+                                            <p className="text-2xl font-bold text-yellow-400">${(totalResponses * avgHours * 15 * 365).toLocaleString()}</p>
+                                            <p className="text-sm text-yellow-200">Annual Data Value</p>
+                                            <p className="text-xs text-yellow-300 mt-1">💰 Brotherhood's Worth</p>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Zone Distribution */}
+                                    <div className="mt-6 grid md:grid-cols-3 gap-4">
+                                        <div className="bg-gradient-to-r from-green-900/40 to-green-800/40 p-4 rounded-lg border border-green-500/30">
+                                            <h4 className="text-green-400 font-bold flex items-center gap-2">
+                                                🟢 Low Usage
+                                                <span className="text-2xl">{zoneDistribution.low}</span>
+                                            </h4>
+                                            <p className="text-green-300 text-sm">Mindful tech use, you control the data</p>
+                                            <p className="text-green-200 text-xs mt-1">≤8 apps, ≤2 hours daily</p>
+                                        </div>
+                                        <div className="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-500/30">
+                                            <h4 className="text-yellow-400 font-bold flex items-center gap-2">
+                                                🟡 Medium Usage
+                                                <span className="text-2xl">{zoneDistribution.moderate}</span>
+                                            </h4>
+                                            <p className="text-yellow-300 text-sm">Moderate usage, some algorithm influence</p>
+                                            <p className="text-yellow-200 text-xs mt-1">9-20 apps, 2-6 hours daily</p>
+                                        </div>
+                                        <div className="bg-gradient-to-r from-red-900/40 to-red-800/40 p-4 rounded-lg border border-red-500/30">
+                                            <h4 className="text-red-400 font-bold flex items-center gap-2">
+                                                🔴 High Usage
+                                                <span className="text-2xl">{zoneDistribution.high}</span>
+                                            </h4>
+                                            <p className="text-red-300 text-sm">Heavy usage, algorithm capture likely</p>
+                                            <p className="text-red-200 text-xs mt-1">21+ apps, 6+ hours daily</p>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Dynamic Insights */}
+                                    {totalResponses > 3 && (
+                                        <div className="mt-6 space-y-4">
+                                            <div className="p-6 bg-gradient-to-r from-purple-900/40 to-yellow-900/40 rounded-lg border border-purple-500/30">
+                                                <h4 className="text-purple-300 font-bold text-lg mb-3">🧠 Brotherhood Insights</h4>
+                                                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <p className="text-yellow-200">
+                                                            <span className="font-bold">Pattern Analysis:</span> {
+                                                                Math.abs(correlation) > 0.7 ? "Strong correlation detected! More apps clearly = more hours. The algorithm has optimized engagement." :
+                                                                Math.abs(correlation) > 0.5 ? "Clear pattern emerging between app variety and time spent. Engagement algorithms working." :
+                                                                Math.abs(correlation) > 0.3 ? "Moderate correlation visible. Some geniuses breaking the pattern!" :
+                                                                "Mixed patterns - some geniuses resist algorithmic capture!"
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-yellow-200">
+                                                            <span className="font-bold">Brotherhood Status:</span> {
+                                                                zoneDistribution.high > totalResponses * 0.6 ? "⚠️ Most geniuses in algorithm capture. Time for digital liberation!" :
+                                                                zoneDistribution.moderate > totalResponses * 0.5 ? "⚖️ Brotherhood in balance zone. Conscious choices needed." :
+                                                                zoneDistribution.low > totalResponses * 0.4 ? "🎯 Many geniuses practicing digital mindfulness!" :
+                                                                "📊 Mixed digital behaviors across the brotherhood."
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {topCombo && topCombo[1] > 2 && (
+                                                    <p className="text-yellow-300 mt-3">
+                                                        <span className="font-bold">Most Common Pattern:</span> {topCombo[1]} geniuses cluster around similar usage - this shows algorithmic influence across the brotherhood!
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            <div className="text-center mt-8 space-y-4">
+                                <div className="hgp-card p-6 rounded-2xl max-w-2xl mx-auto border border-yellow-500/30">
+                                    <blockquote className="text-center">
+                                        <p className="text-2xl font-semibold italic mb-2" style={{color: '#FFCC00'}}>"From Oakland to the world, we're revealing genius everywhere"</p>
+                                        <cite className="text-lg text-yellow-400">- The Hidden Genius Project</cite>
+                                    </blockquote>
+                                    <p className="mt-4 text-lg" style={{color: 'var(--hgp-text-secondary)'}}>Every data point tells a story. Every pattern reveals the algorithm's grip. Time to take control!</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "How Your Data Trains AI",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <p className="text-xl" style={{color: 'var(--hgp-text-primary)'}}>🚀 How AI Can Empower Your Community</p>
+                                <p className="text-lg mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Understanding data flows to build better systems</p>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="bg-gradient-to-br from-blue-900/80 to-black/80 p-6 rounded-2xl border border-blue-500/30">
+                                    <h4 className="text-xl font-bold text-blue-400 mb-4">Current Challenges</h4>
+                                    <ul className="space-y-2 text-blue-200">
+                                        <li>• AI systems need diverse perspectives</li>
+                                        <li>• Data value often goes unrecognized</li>
+                                        <li>• Communities lack representation in AI development</li>
+                                        <li>• Need for ethical technology leadership</li>
+                                    </ul>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-green-900/80 to-black/80 p-6 rounded-2xl border border-green-500/30">
+                                    <h4 className="text-xl font-bold text-green-400 mb-4">Your Genius Opportunity</h4>
+                                    <ul className="space-y-2 text-green-200">
+                                        <li>• Lead AI development that serves communities</li>
+                                        <li>• Create technology that amplifies your voice</li>
+                                        <li>• Build systems that reflect your values</li>
+                                        <li>• Empower others through ethical innovation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center space-y-6">
+                                {/* Data Dignity Calculator */}
+                                <div className="max-w-2xl mx-auto hgp-card p-6 rounded-2xl border border-yellow-500/30">
+                                    <h4 className="text-xl font-bold text-yellow-400 mb-4">💎 Data Dignity Calculator</h4>
+                                    <p className="text-yellow-200 mb-4">See the value your digital presence generates</p>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-6 mb-4">
+                                        <div>
+                                            <label className="block text-sm text-yellow-600 mb-2">Daily Social Media Posts: <span className="font-bold text-yellow-400">{dataPosts}</span></label>
+                                            <input type="range" value={dataPosts} onChange={(e) => setDataPosts(Number(e.target.value))}
+                                                   className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-gold"
+                                                   min="0" max="50" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-yellow-600 mb-2">Photos/Videos Shared: <span className="font-bold text-yellow-400">{dataMedia}</span></label>
+                                            <input type="range" value={dataMedia} onChange={(e) => setDataMedia(Number(e.target.value))}
+                                                   className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-gold"
+                                                   min="0" max="20" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-yellow-600 mb-2">Apps Used Daily: <span className="font-bold text-yellow-400">{dataApps}</span></label>
+                                            <input type="range" value={dataApps} onChange={(e) => setDataApps(Number(e.target.value))}
+                                                   className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-gold"
+                                                   min="0" max="50" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-yellow-600 mb-2">Online Hours Daily: <span className="font-bold text-yellow-400">{dataHours}</span></label>
+                                            <input type="range" value={dataHours} onChange={(e) => setDataHours(Number(e.target.value))}
+                                                   className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-gold"
+                                                   min="0" max="24" step="0.5" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="bg-gradient-to-r from-yellow-900/60 to-green-900/60 p-4 rounded-lg border border-yellow-400/30">
+                                        <h5 className="text-lg font-bold text-yellow-300 mb-2">Your Data Value Estimate</h5>
+                                        <div className="grid md:grid-cols-3 gap-4 text-center">
+                                            <div>
+                                                <p className="text-2xl font-bold text-green-400">${((dataPosts * 0.05 + dataMedia * 0.15 + dataApps * 0.02 + dataHours * 0.08) * 365).toFixed(0)}</p>
+                                                <p className="text-xs text-green-300">Annual Value</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-2xl font-bold text-yellow-400">${((dataPosts * 0.05 + dataMedia * 0.15 + dataApps * 0.02 + dataHours * 0.08) * 30).toFixed(0)}</p>
+                                                <p className="text-xs text-yellow-300">Monthly Value</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-2xl font-bold text-blue-400">{Math.round((dataPosts + dataMedia + dataApps + dataHours) * 10)}</p>
+                                                <p className="text-xs text-blue-300">Data Points/Day</p>
+                                            </div>
+                                        </div>
+                                        <p className="text-center text-sm mt-3" style={{color: 'var(--hgp-text-secondary)'}}>💡 This is what big tech earns from your digital genius!</p>
+                                    </div>
+                                </div>
+                                
+                                <blockquote className="text-center">
+                                    <p className="text-2xl font-semibold italic mb-2 text-yellow-300">"When we understand our value, we can build systems that honor it."</p>
+                                    <cite className="text-lg text-yellow-400">- Hidden Genius Project</cite>
+                                </blockquote>
+                                <div className="mt-8 bg-gray-800/50 p-4 rounded-2xl max-w-md mx-auto border border-yellow-500/30">
+                                    <h4 className="text-lg font-bold mb-2 text-yellow-400">Listen: Empowering Youth in AI</h4>
+                                    <audio src="ai_podcasts/TheHiddenGeniusProject_EmpoweringYouthinAI.wav" controls className="w-full"></audio>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "AI Bias in Financial Services",
+                    content: (
+                        <div className="space-y-10">
+                            <div className="text-center">
+                                <p className="text-xl mb-6" style={{color: 'var(--hgp-text-secondary)'}}>AI doesn't just grant loans. It's making decisions everywhere. Let's see how hidden bias can have a huge impact.</p>
+                                <div className="grid md:grid-cols-3 gap-6">
+                                    <div className="perspective-1000" onClick={() => setFlippedScenario(flippedScenario === 0 ? null : 0)}>
+                                        <div className={`relative w-full h-80 transition-transform duration-700 transform-style-preserve-3d ${flippedScenario === 0 ? 'rotate-y-180' : ''}`}>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer flex items-center justify-center">
+                                                <img src="bias_images/bias_1.png" alt="Biased Resume Scanner" className="w-full h-full object-cover rounded-xl"/>
+                                            </div>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer rotate-y-180">
+                                                <Briefcase className="w-10 h-10 mx-auto text-yellow-500" />
+                                                <h4 className="text-xl font-bold mt-2 text-yellow-400">The Biased Resume Scanner</h4>
+                                                <p className="text-sm leading-relaxed" style={{color: 'var(--hgp-text-secondary)'}}>Leo, a talented graphic designer, applies for a job. The company's AI, trained on past applicants, prefers candidates from certain zip codes and penalizes his non-traditional education, overlooking his strong portfolio. He doesn't get the interview.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="perspective-1000" onClick={() => setFlippedScenario(flippedScenario === 1 ? null : 1)}>
+                                        <div className={`relative w-full h-80 transition-transform duration-700 transform-style-preserve-3d ${flippedScenario === 1 ? 'rotate-y-180' : ''}`}>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer flex items-center justify-center">
+                                                <img src="bias_images/bias_2.png" alt="Unfair Insurance Quote" className="w-full h-full object-cover rounded-xl"/>
+                                            </div>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer rotate-y-180">
+                                                <Car className="w-10 h-10 mx-auto text-red-500" />
+                                                <h4 className="text-xl font-bold mt-2 text-red-400">The Unfair Insurance Quote</h4>
+                                                <p className="text-sm leading-relaxed" style={{color: 'var(--hgp-text-secondary)'}}>Maria needs car insurance. She has a perfect driving record. Because she lives in a low-income, predominantly minority neighborhood, an AI model quotes her a premium 40% higher than someone with a similar record in a wealthier neighborhood. The algorithm has learned to associate zip code with risk.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="perspective-1000" onClick={() => setFlippedScenario(flippedScenario === 2 ? null : 2)}>
+                                        <div className={`relative w-full h-80 transition-transform duration-700 transform-style-preserve-3d ${flippedScenario === 2 ? 'rotate-y-180' : ''}`}>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer flex items-center justify-center">
+                                                <img src="bias_images/bias_3.png" alt="Predictive Justice System" className="w-full h-full object-cover rounded-xl"/>
+                                            </div>
+                                            <div className="absolute w-full h-full backface-hidden bg-gray-800 p-6 rounded-2xl space-y-4 border border-yellow-500/30 shadow-md cursor-pointer rotate-y-180">
+                                                <Scale className="w-10 h-10 mx-auto text-blue-500" />
+                                                <h4 className="text-xl font-bold mt-2 text-blue-400">The Predictive Justice System</h4>
+                                                <p className="text-sm leading-relaxed" style={{color: 'var(--hgp-text-secondary)'}}>An AI model used by a court system to predict the likelihood of a defendant re-offending consistently gives higher risk scores to Black defendants than to white defendants with similar histories. This leads to higher bail amounts and harsher sentences, creating a vicious cycle of inequality.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-center mt-12">
+                <div className="text-center">
+                    <blockquote>
+                        <p className="text-2xl font-semibold italic mb-2" style={{color: '#FFCC00'}}>"In the age of AI, algorithmic bias is the new frontier of civil rights."</p>
+                        <cite className="text-lg text-yellow-400">- John Hope Bryant</cite>
+                    </blockquote>
+                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Data Economy Reality",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl mb-4 text-yellow-400">📊 The Data Economy Reality</h3>
+                                <p className="text-lg" style={{color: 'var(--hgp-text-secondary)'}}>Understanding your digital worth in the new economy</p>
+                                <video className="w-full max-w-lg mx-auto rounded-lg shadow-lg" controls>
+                                    <source src="data_economy_video/app_value_combined.mp4" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            
+                            {/* Key Statistics */}
+                            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-8">
+                                <div 
+                                    className="bg-gradient-to-br from-green-900/80 to-black/80 p-6 rounded-2xl border border-green-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-green-400/50 cursor-pointer"
+                                    onMouseEnter={() => setHoveredCard('creator')}
+                                    onMouseLeave={() => setHoveredCard(null)}
+                                >
+                                    <h4 className="text-xl font-bold text-green-400 mb-2">$250 Billion</h4>
+                                    <p className="text-green-200 text-sm">Creator Economy Market</p>
+                                    <p className="text-green-100 text-xs mt-2">
+                                        {hoveredCard === 'creator' ? 
+                                            "Every TikTok video, Instagram post, and YouTube upload feeds AI training data. Your creativity becomes their profit - without your consent or compensation. This $250B market is built on unpaid labor from creators like you." :
+                                            "AI uses your creative data (art, music, videos) to generate new content, fueling this massive market."
+                                        }
+                                    </p>
+                                </div>
+                                
+                                <div 
+                                    className="bg-gradient-to-br from-blue-900/80 to-black/80 p-6 rounded-2xl border border-blue-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-blue-400/50 cursor-pointer"
+                                    onMouseEnter={() => setHoveredCard('datavalue')}
+                                    onMouseLeave={() => setHoveredCard(null)}
+                                >
+                                    <h4 className="text-xl font-bold text-blue-400 mb-2">$2,000+</h4>
+                                    <p className="text-blue-200 text-sm">Your True Data Value</p>
+                                    <p className="text-blue-100 text-xs mt-2">
+                                        {hoveredCard === 'datavalue' ? 
+                                            "Meta makes $40+ per user quarterly. Google makes $60+ per user quarterly. Your searches, clicks, likes, and location data generate massive revenue. You deserve a fair share of the value you create." :
+                                            "What tech companies actually earn from your digital footprint - time to claim your share!"
+                                        }
+                                    </p>
+                                </div>
+                                
+                                <div 
+                                    className="bg-gradient-to-br from-yellow-900/80 to-black/80 p-6 rounded-2xl border border-yellow-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-yellow-400/50 cursor-pointer"
+                                    onMouseEnter={() => setHoveredCard('teens')}
+                                    onMouseLeave={() => setHoveredCard(null)}
+                                >
+                                    <h4 className="text-xl font-bold text-yellow-400 mb-2">Teens Most</h4>
+                                    <p className="text-yellow-200 text-sm">Susceptible to Algorithms</p>
+                                    <p className="text-yellow-100 text-xs mt-2">
+                                        {hoveredCard === 'teens' ? 
+                                            "Internal TikTok documents show algorithms specifically target teens with 'rabbit holes' of content. Your developing brain is their most valuable asset. The algorithm learns your insecurities, interests, and triggers to keep you scrolling." :
+                                            "TikTok's own strategy documents reveal young people are prime targets for engagement algorithms."
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {/* Data-For-Dignity Framework */}
+                            <div className="max-w-4xl mx-auto">
+                                <div className="hgp-card p-8 rounded-2xl border border-yellow-500/30">
+                                    <h4 className="text-2xl font-bold text-yellow-400 mb-6 text-center">🏛️ The Data-For-Dignity Framework</h4>
+                                    <p className="text-center mb-8" style={{color: 'var(--hgp-text-secondary)'}}>HGP's approach to ethical data economics</p>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-6">
+                                            <div className="bg-gradient-to-r from-green-900/40 to-green-800/40 p-4 rounded-lg border border-green-500/30">
+                                                <h5 className="text-lg font-bold text-green-400 mb-2">🤝 Consent</h5>
+                                                <p className="text-green-200 text-sm mb-2">Community control over data</p>
+                                                <p className="text-green-100 text-xs">You have the absolute right to control your data. Nothing is shared without your informed, explicit permission. No hidden clauses or confusing terms.</p>
+                                            </div>
+                                            
+                                            <div className="bg-gradient-to-r from-blue-900/40 to-blue-800/40 p-4 rounded-lg border border-blue-500/30">
+                                                <h5 className="text-lg font-bold text-blue-400 mb-2">🔍 Transparency</h5>
+                                                <p className="text-blue-200 text-sm mb-2">No more black boxes</p>
+                                                <p className="text-blue-100 text-xs">You deserve to see exactly how your data creates value, who's using it, and how compensation is calculated. Full transparency builds trust.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-6">
+                                            <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 p-4 rounded-lg border border-purple-500/30">
+                                                <h5 className="text-lg font-bold text-purple-400 mb-2">⚖️ Fairness</h5>
+                                                <p className="text-purple-200 text-sm mb-2">Equitable value sharing</p>
+                                                <p className="text-purple-100 text-xs">The value you create should be recognized and shared equitably. Economic benefits distributed broadly, not concentrated at the top.</p>
+                                            </div>
+                                            
+                                            <div className="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-500/30">
+                                                <h5 className="text-lg font-bold text-yellow-400 mb-2">💰 Compensation</h5>
+                                                <p className="text-yellow-200 text-sm mb-2">Real economic value</p>
+                                                <p className="text-yellow-100 text-xs">Your data has real economic value. Fair compensation can create sustainable income streams and bridge wage gaps from AI job displacement.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Call to Action */}
+                            <div className="text-center space-y-6">
+                                <div className="max-w-3xl mx-auto bg-gradient-to-r from-yellow-900/60 to-green-900/60 p-6 rounded-2xl border border-yellow-400/30">
+                                    <h4 className="text-xl font-bold text-yellow-300 mb-4">🚀 Lead the Data Dignity Movement</h4>
+                                    <p className="mb-4" style={{color: 'var(--hgp-text-secondary)'}}>As Hidden Genius leaders, you have the power to build systems that honor data creators and communities.</p>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p className="" style={{color: 'var(--hgp-text-secondary)'}}>
+                                                <span className="font-bold text-yellow-600">Build:</span> Apps that compensate users fairly for their data contributions
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="" style={{color: 'var(--hgp-text-secondary)'}}>
+                                                <span className="font-bold text-yellow-600">Lead:</span> Community discussions about data rights and digital dignity
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <blockquote className="text-center">
+                                    <p className="text-2xl font-semibold italic mb-2" style={{color: '#FFCC00'}}>"You are the new asset class. Your data is your property."</p>
+                                    <cite className="text-lg text-yellow-400">- John Hope Bryant, adapted for HGP</cite>
+                                </blockquote>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "AI Model Showcase",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl mb-4 text-yellow-400">🤖 AI Model Showcase</h3>
+                                <p className="text-lg" style={{color: 'var(--hgp-text-secondary)'}}>Let's explore the different types of generative AI models.</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="hgp-card p-6 rounded-2xl">
+                                    <TextIcon className="w-12 h-12 mx-auto text-yellow-400" />
+                                    <h4 className="text-xl font-bold text-center mt-4 text-yellow-400">Text Generation</h4>
+                                    <p className="text-center mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Models like GPT-3 can write essays, poems, and even code.</p>
+                                    <p className="text-center mt-4 font-bold" style={{color: 'var(--hgp-text-primary)'}}>Activity: Write a financial plan to help me earn $500 over the summer.</p>
+                                    <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="block mt-4">
+                                        <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            Try Google Gemini →
+                                        </button>
+                                    </a>
+                                </div>
+                                <div className="hgp-card p-6 rounded-2xl">
+                                    <ImageIcon className="w-12 h-12 mx-auto text-yellow-400" />
+                                    <h4 className="text-xl font-bold text-center mt-4 text-yellow-400">Image Generation</h4>
+                                    <p className="text-center mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Models like DALL-E 2 can create images from text descriptions.</p>
+                                    <p className="text-center mt-4 font-bold" style={{color: 'var(--hgp-text-primary)'}}>Activity: Create an image of a "money tree" in a futuristic city.</p>
+                                    <a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer" className="block mt-4">
+                                        <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            Try ChatGPT →
+                                        </button>
+                                    </a>
+                                </div>
+                                <div className="hgp-card p-6 rounded-2xl">
+                                    <AudioIcon className="w-12 h-12 mx-auto text-yellow-400" />
+                                    <h4 className="text-xl font-bold text-center mt-4 text-yellow-400">Audio Generation</h4>
+                                    <p className="text-center mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Models can create realistic speech, music, and sound effects.</p>
+                                    <p className="text-center mt-4 font-bold" style={{color: 'var(--hgp-text-primary)'}}>Activity: Make a song about helping brothers to learn more about AI.</p>
+                                    <a href="https://suno.ai" target="_blank" rel="noopener noreferrer" className="block mt-4">
+                                        <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            Try Suno AI →
+                                        </button>
+                                    </a>
+                                </div>
+                                <div className="hgp-card p-6 rounded-2xl">
+                                    <VideoIcon className="w-12 h-12 mx-auto text-yellow-400" />
+                                    <h4 className="text-xl font-bold text-center mt-4 text-yellow-400">Video Generation</h4>
+                                    <p className="text-center mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Models can create short video clips from text or images.</p>
+                                    <p className="text-center mt-4 font-bold" style={{color: 'var(--hgp-text-primary)'}}>Activity: Create a short video of a rocket launching from a piggy bank.</p>
+                                    <a href="https://labs.google" target="_blank" rel="noopener noreferrer" className="block mt-4">
+                                        <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            Try Google Flow →
+                                        </button>
+                                    </a>
+                                </div>
+                                <div className="hgp-card p-6 rounded-2xl">
+                                    <Code className="w-12 h-12 mx-auto text-yellow-400" />
+                                    <h4 className="text-xl font-bold text-center mt-4 text-yellow-400">Code Generation</h4>
+                                    <p className="text-center mt-2" style={{color: 'var(--hgp-text-secondary)'}}>Models can write code in various programming languages.</p>
+                                    <p className="text-center mt-4 font-bold" style={{color: 'var(--hgp-text-primary)'}}>Activity: Write a Python function to calculate compound interest.</p>
+                                    <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="block mt-4">
+                                        <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            Try Claude →
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Atlanta Chronicles: AI Ethics Game",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl mb-4 text-yellow-400">🎮 Atlanta Chronicles: AI Ethics Game</h3>
+                                <p className="text-lg text-yellow-200">Learn responsible AI development through an interactive game set in Atlanta</p>
+                                <p className="text-sm text-yellow-300 mt-2">Make decisions that balance technical innovation with community trust</p>
+                            </div>
+                            
+                            <div className="max-w-6xl mx-auto">
+                                <div className="hgp-card rounded-2xl border border-yellow-500/30 overflow-hidden">
+                                    <iframe
+                                        src="atl_chronicles/atl_chronicles.html"
+                                        className="w-full h-[700px] border-0"
+                                        title="Atlanta Chronicles: AI Ethics Game"
+                                        allowFullScreen
+                                    >
+                                        Your browser does not support iframes.
+                                    </iframe>
+                                </div>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                                <div className="bg-gradient-to-br from-blue-900/80 to-black/80 p-6 rounded-2xl border border-blue-500/30">
+                                    <h4 className="text-xl font-bold text-blue-400 mb-4">🎯 Game Objectives</h4>
+                                    <ul className="space-y-2 text-blue-200">
+                                        <li>• Build AI systems that serve all communities</li>
+                                        <li>• Balance technical excellence with ethical responsibility</li>
+                                        <li>• Learn to address bias in AI development</li>
+                                        <li>• Understand the importance of community trust</li>
+                                    </ul>
+                                </div>
+                                
+                                <div className="bg-gradient-to-br from-green-900/80 to-black/80 p-6 rounded-2xl border border-green-500/30">
+                                    <h4 className="text-xl font-bold text-green-400 mb-4">🚀 What You'll Learn</h4>
+                                    <ul className="space-y-2 text-green-200">
+                                        <li>• How to identify and fix AI bias</li>
+                                        <li>• The importance of diverse data collection</li>
+                                        <li>• Building trust through transparency</li>
+                                        <li>• Becoming a responsible AI leader</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center">
+                                <div className="max-w-3xl mx-auto bg-gradient-to-r from-purple-900/60 to-yellow-900/60 p-6 rounded-2xl border border-purple-500/30">
+                                    <h4 className="text-xl font-bold text-purple-300 mb-4">🌟 The Hidden Genius Way</h4>
+                                    <p className="text-purple-200 mb-4">
+                                        This game embodies the Hidden Genius Project philosophy: using technology to uplift communities while maintaining ethical standards.
+                                    </p>
+                                    <p className="text-purple-100 text-sm">
+                                        Every decision you make shapes not just your character's journey, but reflects real-world choices AI developers face every day.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Your AI Future Goals",
+                    content: (
+                        <div className="space-y-8">
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl mb-4 text-yellow-400">🚀 Your AI Future Goals</h3>
+                                <p className="text-lg" style={{color: 'var(--hgp-text-secondary)'}}>Setting your path to become an AI leader</p>
+                                
+                                {/* Interactive 3D Earth */}
+                                <div className="mt-6 mb-8">
+                                    <div className="hgp-card rounded-2xl border border-yellow-500/30 overflow-hidden">
+                                        <iframe
+                                            src="earth.html"
+                                            className="w-full h-[400px] border-0"
+                                            title="Interactive 3D Earth"
+                                            allowFullScreen
+                                        >
+                                            Your browser does not support iframes.
+                                        </iframe>
+                                    </div>
+                                    <p className="text-xs text-yellow-300 mt-2">🌍 Interactive 3D Earth - Drag to rotate, scroll to zoom</p>
+                                </div>
+                            </div>
+                            
+                            {/* Future Vision Section */}
+                            <div className="max-w-4xl mx-auto space-y-8">
+                                <div className="hgp-card p-8 rounded-2xl border border-yellow-400/30">
+                                    <h4 className="text-2xl font-bold text-yellow-400 mb-6 text-center">🌟 Your 2025-2030 AI Leadership Vision</h4>
+                                    <p className="text-center mb-8" style={{color: 'var(--hgp-text-secondary)'}}>Where will your genius take you in the age of AI?</p>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-6">
+                                            <div className="bg-gradient-to-r from-green-900/40 to-green-800/40 p-4 rounded-lg border border-green-500/30">
+                                                <h5 className="text-lg font-bold text-green-400 mb-2">🎯 Short-term (1-2 years)</h5>
+                                                <ul className="text-green-200 text-sm space-y-1">
+                                                    <li>• Master foundational AI/ML concepts</li>
+                                                    <li>• Build your first AI-powered community project</li>
+                                                    <li>• Join or start an AI ethics study group</li>
+                                                    <li>• Mentor peers in responsible tech development</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div className="bg-gradient-to-r from-blue-900/40 to-blue-800/40 p-4 rounded-lg border border-blue-500/30">
+                                                <h5 className="text-lg font-bold text-blue-400 mb-2">🏗️ Medium-term (3-5 years)</h5>
+                                                <ul className="text-blue-200 text-sm space-y-1">
+                                                    <li>• Launch a startup addressing community needs</li>
+                                                    <li>• Contribute to open-source AI fairness tools</li>
+                                                    <li>• Speak at tech conferences about equity</li>
+                                                    <li>• Develop AI curriculum for underrepresented youth</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-6">
+                                            <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 p-4 rounded-lg border border-purple-500/30">
+                                                <h5 className="text-lg font-bold text-purple-400 mb-2">🌍 Long-term (5-10 years)</h5>
+                                                <ul className="text-purple-200 text-sm space-y-1">
+                                                    <li>• Lead an AI company prioritizing social impact</li>
+                                                    <li>• Influence AI policy at local/national level</li>
+                                                    <li>• Create technologies that close equity gaps</li>
+                                                    <li>• Establish a foundation supporting AI education</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div className="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-500/30">
+                                                <h5 className="text-lg font-bold text-yellow-400 mb-2">🏆 Legacy Goals</h5>
+                                                <ul className="text-yellow-200 text-sm space-y-1">
+                                                    <li>• Be known as an ethical AI pioneer</li>
+                                                    <li>• Inspire the next generation of diverse tech leaders</li>
+                                                    <li>• Help create an AI-powered equitable society</li>
+                                                    <li>• Leave the world better than you found it</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Personal Commitment Section */}
+                                <div className="max-w-2xl mx-auto">
+                                    <div className="hgp-card p-6 rounded-2xl space-y-4 border border-yellow-400/30">
+                                        <h4 className="text-xl font-bold text-yellow-400 mb-4">📝 My AI Leadership Commitment</h4>
+                                        
+                                        <label className="block">
+                                            <span className="text-sm text-yellow-600">My 1-Year AI Goal:</span>
+                                            <input
+                                                id="ai-goal-1"
+                                                type="text"
+                                                onChange={updateDignityMeter}
+                                                className="mt-2 w-full px-4 py-2 hgp-card border border-yellow-400/30 rounded-lg focus:border-yellow-300 focus:ring-2 focus:ring-yellow-400/50 focus:outline-none" style={{color: 'var(--hgp-text-primary)'}}
+                                                placeholder="e.g., Learn Python and build an AI model for my community"
+                                            />
+                                        </label>
+                                        
+                                        <label className="block">
+                                            <span className="text-sm text-yellow-600">Community Challenge I'll Address:</span>
+                                            <input
+                                                id="ai-goal-2"
+                                                type="text"
+                                                onChange={updateDignityMeter}
+                                                className="mt-2 w-full px-4 py-2 hgp-card border border-yellow-400/30 rounded-lg focus:border-yellow-300 focus:ring-2 focus:ring-yellow-400/50 focus:outline-none" style={{color: 'var(--hgp-text-primary)'}}
+                                                placeholder="e.g., Educational inequality, healthcare access, economic opportunity"
+                                            />
+                                        </label>
+                                        
+                                        <label className="block">
+                                            <span className="text-sm text-yellow-600">My First Step This Week:</span>
+                                            <input
+                                                id="ai-goal-3"
+                                                type="text"
+                                                onChange={updateDignityMeter}
+                                                className="mt-2 w-full px-4 py-2 hgp-card border border-yellow-400/30 rounded-lg focus:border-yellow-300 focus:ring-2 focus:ring-yellow-400/50 focus:outline-none" style={{color: 'var(--hgp-text-primary)'}}
+                                                placeholder="e.g., Sign up for an AI course, join a coding group, research my community's needs"
+                                            />
+                                        </label>
+                                        
+                                        <button className="w-full mt-4 px-6 py-3 hgp-button rounded-lg hover:opacity-90 transition-all font-bold" style={{color: '#000000'}}>
+                                            🌟 Commit to My AI Future
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {/* Data Dignity Meter */}
+                                <div className="max-w-2xl mx-auto mt-8">
+                                    <div className="hgp-card p-6 rounded-2xl border border-yellow-400/30">
+                                        <h4 className="text-xl font-bold text-yellow-400 mb-4 text-center">💎 Data Dignity Meter</h4>
+                                        <p className="text-yellow-200 text-center mb-6">Your commitment level increases as you complete your AI leadership goals</p>
+                                        
+                                        <div className="relative">
+                                            <div className="w-full bg-gray-700 rounded-full h-6 mb-4">
+                                                <div 
+                                                    className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-6 rounded-full transition-all duration-1000 ease-out"
+                                                    style={{width: `${dignityMeter}%`}}
+                                                ></div>
+                                            </div>
+                                            
+                                            <div className="text-center space-y-2">
+                                                <div className="text-3xl font-bold text-yellow-400">
+                                                    {dignityMeter}%
+                                                </div>
+                                                <div className="text-sm text-yellow-200">
+                                                    {dignityMeter === 0 && "Start filling out your commitments to build your data dignity score!"}
+                                                    {dignityMeter > 0 && dignityMeter < 50 && "🌱 Growing your commitment to AI leadership"}
+                                                    {dignityMeter >= 50 && dignityMeter < 100 && "🚀 Strong commitment to making a difference"}
+                                                    {dignityMeter === 100 && "🌟 Complete AI Leadership Commitment - Ready to change the world!"}
+                                                </div>
+                                            </div>
+                                            
+                                            {dignityMeter === 100 && (
+                                                <div className="mt-4 p-4 bg-gradient-to-r from-green-900/60 to-yellow-900/60 rounded-lg border border-green-500/30">
+                                                    <p className="text-center text-green-200 font-bold">
+                                                        🎉 Congratulations! Your commitment to AI leadership and data dignity is complete. You're ready to lead your community into the future!
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Inspiration Quote */}
+                            <div className="text-center space-y-6">
+                                <div className="max-w-3xl mx-auto bg-gradient-to-r from-yellow-900/60 to-green-900/60 p-6 rounded-2xl border border-yellow-400/30">
+                                    <h4 className="text-xl font-bold text-yellow-300 mb-4">🚀 The Hidden Genius Pledge</h4>
+                                    <p className="italic text-lg leading-relaxed" style={{color: 'var(--hgp-text-secondary)'}}>
+                                        "I commit to using AI as a force for good in my community. I will build technology that uplifts others, 
+                                        ensures fairness, and creates opportunities for those who have been left behind. My genius is not hidden—
+                                        it's here to change the world."
+                                    </p>
+                                </div>
+                                
+                                <blockquote className="text-center">
+                                    <p className="text-2xl font-semibold italic mb-2" style={{color: '#FFCC00'}}>"The future of AI depends on voices like yours. Make sure you're heard."</p>
+                                    <cite className="text-lg text-yellow-400">- Hidden Genius Project</cite>
+                                </blockquote>
+                            </div>
+                        </div>
+                    )
+                }
+            ];
+
+            return (
+                <div className="min-h-screen text-white overflow-hidden font-sans relative hgp-bg-pattern" style={{background: 'linear-gradient(135deg, #000000 0%, #1A1A1A 50%, #2E2E2E 100%)'}}>
+                    {/* Header */}
+                    <header className="fixed top-0 w-full bg-black/90 backdrop-blur-lg z-50 px-6 py-4 border-b border-yellow-400/40" style={{background: 'linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(26,26,26,0.9))'}}>
+                        <div className="max-w-7xl mx-auto flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <img src="logos/hgp-logo.png" alt="Hidden Genius Project Logo" className="h-12" />
+                                <img src="logos/gdata_day_trans.png" alt="G-Data Day Logo" className="h-12" />
+                                <div>
+                                    <h1 className="text-2xl font-bold hgp-text-shadow" style={{color: '#FFD700'}}>
+                                        Hidden Genius AI Module
+                                    </h1>
+                                    <p className="text-sm" style={{color: 'var(--hgp-text-secondary)'}}>Revealing Genius Through Technology</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="text-base font-medium" style={{color: '#FFD700'}}>The value of one, the power of all</div>
+                                <div className="flex gap-1.5">
+                                    {slides.map((_, index) => (
+                                        <div
+                                            key={index}
+                                            className={`h-2 transition-all duration-300 rounded-full ${
+                                                index === currentSlide ? 'w-8 bg-yellow-400' : 'w-2 bg-slate-600'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="pt-28 pb-24 px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className={`backdrop-blur-xl rounded-3xl p-8 shadow-2xl min-h-[600px] ${currentSlide === 0 ? 'bg-transparent shadow-none border-none' : 'hgp-card'}`}>
+                                {currentSlide > 0 && (
+                                    <h2 className="text-5xl font-bold mb-8 text-center hgp-text-shadow" style={{color: '#FFD700'}}>
+                                        {slides[currentSlide].title}
+                                    </h2>
+                                )}
+                                <div className="slide-content">
+                                    {slides[currentSlide].content}
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Navigation */}
+                    <nav className="fixed bottom-0 w-full backdrop-blur-lg px-6 py-4 border-t border-yellow-400/50" style={{background: 'linear-gradient(to top, rgba(0,0,0,0.95), rgba(26,26,26,0.9))'}}>
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <button
+                                onClick={prevSlide}
+                                disabled={currentSlide === 0}
+                                className="flex items-center gap-3 px-6 py-3 bg-black/80 rounded-xl hover:bg-black/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-yellow-400/50 text-yellow-200 font-medium"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                                Previous
+                            </button>
+                            <div className="text-center">
+                                <p className="text-base font-medium" style={{color: '#FFD700'}}>Module {currentSlide} of {slides.length - 1}</p>
+                            </div>
+                            <button
+                                onClick={nextSlide}
+                                disabled={currentSlide === slides.length - 1}
+                                className="flex items-center gap-3 px-8 py-3 hgp-button text-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
+                            >
+                                Next
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            );
+        };
+
+        // Render the App
+        ReactDOM.render(<HGPApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

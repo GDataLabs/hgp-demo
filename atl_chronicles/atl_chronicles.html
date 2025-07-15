@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Genius: The Atlanta Chronicles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 1rem;
+            border: 4px solid #f9ca24;
+            border-radius: 15px;
+            background-color: #2c2c2c;
+            box-shadow: 0 0 20px rgba(249, 202, 36, 0.5);
+        }
+        .btn {
+            background-color: #f9ca24;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+            transition: all 0.2s ease-in-out;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            background-color: #f0932b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .dialog-box {
+            border: 3px solid #f9ca24;
+            background: rgba(0,0,0,0.6);
+        }
+        .character {
+            image-rendering: pixelated;
+            height: 180px; /* Adjusted height for new sprites */
+            transform: translateY(10px); /* Adjust position to stand on ground */
+        }
+        .scenario-image-container {
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+            image-rendering: pixelated;
+        }
+        .progress-bar-container {
+            background-color: #444;
+            border-radius: 10px;
+            border: 2px solid #f9ca24;
+        }
+        .progress-bar {
+            background-color: #f9ca24;
+            transition: width 0.5s ease-in-out;
+        }
+        #start-screen {
+            background-image: url('atl_chronicles_0.png');
+            background-size: cover;
+            background-position: center;
+            padding-top: 200px; /* Make space for title text */
+            padding-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container" class="game-container">
+        
+        <div id="start-screen" class="text-center p-6 rounded-t-lg">
+            <h1 class="text-4xl md:text-5xl text-center mb-6 text-[#f9ca24]" style="text-shadow: 3px 3px #000;">AI GENIUS</h1>
+            <h2 class="text-lg md:text-xl text-center mb-12 text-white" style="text-shadow: 2px 2px #000;">THE ATLANTA CHRONICLES</h2>
+            <button id="start-btn" class="btn font-bold py-4 px-8 rounded-lg text-2xl animate-pulse">PRESS START</button>
+        </div>
+
+        <div id="game-screen" class="hidden p-6">
+            <div id="scenario-image" class="scenario-image-container mb-4 h-64 bg-gray-700 rounded-lg flex items-end justify-center border-2 border-[#f9ca24] p-4 overflow-hidden">
+                 
+            </div>
+
+            <div id="stats" class="flex justify-between mb-4 text-sm md:text-lg">
+                <div>Tech Skills: <span id="tech-skill-value">0</span></div>
+                <div>Community Trust: <span id="community-trust-value">50</span></div>
+            </div>
+            
+            <div class="progress-bar-container w-full mb-4">
+                <div id="progress-bar" class="progress-bar h-4 rounded-md" style="width: 0%;"></div>
+            </div>
+
+            <div id="dialog-box" class="dialog-box p-4 rounded-lg mb-4 min-h-[120px]">
+                <p id="narrative-text"></p>
+            </div>
+
+            <div id="choices" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Choices will be dynamically inserted here -->
+            </div>
+             <div id="feedback" class="mt-4 p-3 rounded-lg text-center hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const startBtn = document.getElementById('start-btn');
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const narrativeText = document.getElementById('narrative-text');
+            const choicesContainer = document.getElementById('choices');
+            const techSkillValue = document.getElementById('tech-skill-value');
+            const communityTrustValue = document.getElementById('community-trust-value');
+            const feedbackBox = document.getElementById('feedback');
+            const scenarioImage = document.getElementById('scenario-image');
+            
+            const progressBar = document.getElementById('progress-bar');
+
+            // --- Game State ---
+            let techSkill = 0;
+            let communityTrust = 50;
+            let currentScenario = 0;
+
+            // --- Game Content ---
+            const characters = {
+                genius: "https://i.ibb.co/d04YVvL/genius-sprite.png",
+                mentor: "https://i.ibb.co/yWStnBw/mentor-sprite.png",
+                leader: "https://i.ibb.co/9vCf6bJ/leader-sprite.png",
+                success: "https://i.ibb.co/yQfMWgQ/success-char.png",
+                techWhiz: "https://i.ibb.co/d04YVvL/genius-sprite.png",
+                communityChamp: "https://i.ibb.co/d04YVvL/genius-sprite.png"
+            };
+
+            const scenarios = [
+                {
+                    narrative: 'Your mentor, David, greets you. "Welcome, Genius! Your first project is to create an AI to help local restaurants predict daily customer traffic. This will help them reduce food waste. Where do you start?"',
+                    scene: "atl_chronicles_1.png",
+                    characterKey: "mentor",
+                    choices: [
+                        { text: "Collect data from high-end Buckhead restaurants. They have the most data.", tech: 10, trust: -10, feedback: "A good start, but this data might not represent all of Atlanta's diverse neighborhoods, leading to a biased model." },
+                        { text: "Survey a wide range of restaurants across different Atlanta neighborhoods.", tech: 5, trust: 15, feedback: "Excellent choice! This inclusive approach will create a fairer and more accurate AI for the whole community." }
+                    ]
+                },
+                {
+                    narrative: 'Your model is showing bias! It performs well for downtown areas but is less accurate for smaller family-owned spots in the West End. What do you do?',
+                    scene: "atl_chronicles_2.png",
+                    characterKey: "genius",
+                    choices: [
+                        { text: "Launch it anyway. It works for most businesses.", tech: -5, trust: -20, feedback: "This could harm smaller businesses. Responsible AI development means ensuring fairness for everyone." },
+                        { text: "Go back and gather more specific data from underrepresented businesses to retrain the model.", tech: 15, trust: 20, feedback: "This is the core of responsible AI! By addressing the bias, you've made the tool truly useful for the community." }
+                    ]
+                },
+                {
+                    narrative: 'A local community leader is concerned about how customer data will be used. "How can we trust this AI with our privacy?" she asks.',
+                    scene: "atl_chronicles_3.png",
+                    characterKey: "leader",
+                    choices: [
+                        { text: 'Tell her, "Don\'t worry, the tech is complex but secure."', tech: 0, trust: -15, feedback: "Trust requires transparency. Explaining the 'how' is as important as the 'what'." },
+                        { text: "Organize a workshop to explain how the data is anonymized and used ethically.", tech: 10, trust: 25, feedback: "Building trust is key! By engaging with the community, you've shown respect and built a stronger partnership." }
+                    ]
+                },
+                {
+                    narrative: "Success! Your AI is helping restaurants across Atlanta reduce waste and improve service. You're invited to present your project at a 'Brothers Code' event. What is your key message?",
+                    scene: "atl_chronicles_4.png",
+                    characterKey: "genius",
+                    choices: [
+                        { text: "Focus on the complex algorithms and technical achievements.", tech: 10, trust: 5, feedback: "The tech is impressive, but the 'why' is what truly inspires." },
+                        { text: "Share your journey and emphasize how tech can be used to uplift our own communities.", tech: 10, trust: 20, feedback: "This is the heart of a Hidden Genius! You've inspired the next generation and become a leader." }
+                    ]
+                }
+            ];
+
+            // --- Event Listeners ---
+            startBtn.addEventListener('click', startGame);
+
+            // --- Game Logic Functions ---
+            function startGame() {
+                startScreen.style.display = 'none';
+                gameScreen.classList.remove('hidden');
+                loadScenario(scenarios[currentScenario]);
+            }
+
+            function loadScenario(scenario) {
+                narrativeText.textContent = scenario.narrative;
+                scenarioImage.style.backgroundImage = `url(${scenario.scene})`;
+                
+                choicesContainer.innerHTML = '';
+                scenario.choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.textContent = choice.text;
+                    button.classList.add('btn', 'font-bold', 'py-4', 'px-4', 'rounded-lg', 'text-left', 'h-full');
+                    button.onclick = () => selectChoice(choice);
+                    choicesContainer.appendChild(button);
+                });
+            }
+
+            function selectChoice(choice) {
+                techSkill += choice.tech;
+                communityTrust += choice.trust;
+                communityTrust = Math.max(0, Math.min(100, communityTrust));
+                updateStats();
+
+                showFeedback(choice.feedback, choice.trust > 0 || choice.tech > 5);
+
+                currentScenario++;
+                updateProgressBar();
+                
+                choicesContainer.innerHTML = '<p class="text-center col-span-2">Analyzing outcome...</p>';
+
+                setTimeout(() => {
+                    feedbackBox.classList.add('hidden');
+                    if (currentScenario < scenarios.length) {
+                        loadScenario(scenarios[currentScenario]);
+                    } else {
+                        endGame();
+                    }
+                }, 3500);
+            }
+            
+            function updateProgressBar() {
+                const progress = (currentScenario / scenarios.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            function showFeedback(message, isPositive) {
+                feedbackBox.textContent = message;
+                feedbackBox.classList.remove('hidden');
+                feedbackBox.style.backgroundColor = isPositive ? 'rgba(76, 175, 80, 0.7)' : 'rgba(244, 67, 54, 0.7)';
+                feedbackBox.style.border = `2px solid ${isPositive ? '#4CAF50' : '#f44336'}`;
+            }
+
+            function updateStats() {
+                techSkillValue.textContent = techSkill;
+                communityTrustValue.textContent = communityTrust;
+            }
+
+            function endGame() {
+                let endMessage = "";
+                let endCharacterKey = "";
+
+                if (techSkill >= 35 && communityTrust >= 75) {
+                    endMessage = "Congratulations, Genius! You've masterfully balanced technical skill with community trust. You developed a powerful, responsible AI and became a true leader. Your journey is an inspiration!";
+                    endCharacterKey = "success";
+                } else if (techSkill >= 35 && communityTrust < 75) {
+                    endMessage = "Your technical skills are impressive, but building trust is just as important. You've created powerful tech, but remember to always bring the community along with you on the journey.";
+                    endCharacterKey = "techWhiz";
+                } else {
+                    endMessage = "You showed great heart for the community! Keep honing your technical skills. The combination of your passion and expertise will make you an unstoppable force for good.";
+                    endCharacterKey = "communityChamp";
+                }
+                
+                narrativeText.textContent = endMessage;
+            
+            scenarioImage.style.backgroundImage = 'url(atl_chronicles_5.png)'; 
+            
+
+            const restartButton = document.createElement('button');
+            restartButton.textContent = "Play Again";
+            restartButton.classList.add('btn', 'font-bold', 'py-3', 'px-6', 'rounded-lg', 'text-xl', 'mt-4', 'mx-auto', 'block');
+            restartButton.onclick = () => window.location.reload();
+
+                choicesContainer.innerHTML = '';
+                choicesContainer.appendChild(restartButton);
+                feedbackBox.classList.add('hidden');
+            }
+
+            updateStats();
+        });
+    </script>
+</body>
+</html>
