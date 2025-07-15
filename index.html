@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WDPFT - Financial Planning for Retirement</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>Hidden Genius Project - AI Literacy Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -17,782 +14,154 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        // --- Main App Component ---
-        // This component manages the overall application state, including which page is currently visible.
-        function App() {
-          const [page, setPage] = useState('home');
-          const [isLoggedIn, setIsLoggedIn] = useState(false);
-          const [users, setUsers] = useState({}); // Simple in-memory user store
-
-          // The navigate function is passed down to other components to allow them to change the page.
-          const navigate = (newPage) => {
-            window.scrollTo(0, 0); // Scroll to top on page change
-            setPage(newPage);
-          };
-
-          const handleLogin = () => setIsLoggedIn(true);
-          const handleLogout = () => {
-              setIsLoggedIn(false);
-              navigate('home');
-          };
-
-          return (
-            <div className="bg-[#F7E7CE] min-h-screen font-sans text-gray-800">
-              <Header navigate={navigate} isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-              <main className="p-4 sm:p-6 md:p-8 pb-24">
-                {/* The content of the page changes based on the 'page' state */}
-                {page === 'home' && <Home navigate={navigate} />}
-                {page === 'survey' && <Survey navigate={navigate} />}
-                {page === 'invest' && <Invest navigate={navigate} />}
-                {page === 'education' && <Education navigate={navigate} />}
-                {page === 'checkin' && <CheckIn navigate={navigate} />}
-                {page === 'auto_invest' && <AutoInvest navigate={navigate} />}
-                {page === 'charlie' && <CharlieAI />}
-                {page === 'login' && <Login navigate={navigate} onLogin={handleLogin} users={users} />}
-                {page === 'register' && <Register navigate={navigate} setUsers={setUsers} users={users} />}
-              </main>
-              <Footer />
+<body class="bg-gradient-to-br from-gray-900 to-amber-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="flex justify-center items-center gap-4 mb-6">
+                <img src="logos/hgp-logo.png" alt="Hidden Genius Project Logo" class="h-16 w-16 object-contain">
+                <img src="logos/gdata_day_trans.png" alt="GData Labs Logo" class="h-16 w-16 object-contain">
             </div>
-          );
-        }
+            <h1 class="text-5xl font-bold mb-4 gradient-bg bg-clip-text text-transparent">#GeniusRevealed</h1>
+            <p class="text-xl text-amber-200 mb-2">AI Literacy & Leadership Platform</p>
+            <p class="text-lg text-gray-300">Empowering Black Youth Through Technology</p>
+        </header>
 
-        // --- Reusable UI Components ---
-        const FeatureBox = ({ title, children }) => (
-          <div className="flex-1 min-w-[280px] bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-xl font-bold text-[#72975d] mb-2">{title}</h3>
-            <p className="text-base">{children}</p>
-          </div>
-        );
-
-        const InfoBox = ({ children }) => (
-            <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-                {children}
-            </div>
-        );
-
-        const ActionButton = ({ onClick, children, className = '', disabled = false }) => (
-          <button
-            onClick={onClick}
-            disabled={disabled}
-            className={`px-6 py-3 bg-[#87A96B] text-white font-bold rounded-lg shadow-md hover:bg-[#72975d] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-          >
-            {children}
-          </button>
-        );
-
-        // --- Header Component ---
-        // Contains the main navigation bar.
-        const Header = ({ navigate, isLoggedIn, handleLogout }) => {
-          const [menuOpen, setMenuOpen] = useState(false);
-
-          const navLinks = [
-            { name: 'Home', page: 'home' },
-            { name: 'Survey', page: 'survey' },
-            { name: 'Invest', page: 'invest' },
-            { name: 'Education', page: 'education' },
-            { name: 'Check-In', page: 'checkin' },
-            { name: 'Auto-Invest', page: 'auto_invest' },
-            { name: 'Charlie AI', page: 'charlie' },
-          ];
-
-          return (
-            <header className="bg-[#87A96B] text-white shadow-lg sticky top-0 z-50">
-              <div className="container mx-auto px-4 sm:px-6 md:px-8">
-                <div className="flex justify-between items-center py-4">
-                  <h1 className="text-2xl font-bold cursor-pointer" onClick={() => navigate('home')}>WDPFT</h1>
-                  <nav className="hidden lg:flex items-center space-x-4">
-                    {navLinks.map(link => (
-                      <a key={link.page} href="#" onClick={(e) => { e.preventDefault(); navigate(link.page); }} className="px-3 py-2 rounded-md text-sm font-medium hover:bg-[#72975d] transition-colors">
-                        {link.name}
-                      </a>
-                    ))}
-                    {isLoggedIn ? (
-                        <a href="#" onClick={(e) => {e.preventDefault(); handleLogout();}} className="px-3 py-2 rounded-md text-sm font-medium bg-red-500 hover:bg-red-600 transition-colors">Logout</a>
-                    ) : (
-                        <>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('login'); }} className="px-3 py-2 rounded-md text-sm font-medium hover:bg-[#72975d] transition-colors">Login</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('register'); }} className="px-3 py-2 rounded-md text-sm font-medium hover:bg-[#72975d] transition-colors">Register</a>
-                        </>
-                    )}
-                  </nav>
-                  <div className="lg:hidden">
-                    <button onClick={() => setMenuOpen(!menuOpen)} className="text-white focus:outline-none">
-                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={menuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-                      </svg>
-                    </button>
-                  </div>
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto">
+            <!-- Platform Overview -->
+            <section class="mb-16">
+                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Interactive Learning Modules</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">AI Financial Literacy</h3>
+                            <p class="text-gray-300 mb-4">Learn how AI impacts your financial future and take control of your data value.</p>
+                            <a href="AIFinancialLiteracyApp.tsx" class="text-amber-400 hover:text-amber-300 font-semibold">Explore Module →</a>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Hidden Genius Demo</h3>
+                            <p class="text-gray-300 mb-4">Experience the full Hidden Genius Project AI literacy curriculum.</p>
+                            <a href="hgp-demo.html" class="text-amber-400 hover:text-amber-300 font-semibold">Launch Demo →</a>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">AI Literacy Module</h3>
+                            <p class="text-gray-300 mb-4">Deep dive into AI concepts, ethics, and practical applications.</p>
+                            <a href="hgp-ai-literacy.tsx" class="text-amber-400 hover:text-amber-300 font-semibold">Start Learning →</a>
+                        </div>
+                    </div>
                 </div>
-                {menuOpen && (
-                  <nav className="lg:hidden pb-4">
-                    {navLinks.map(link => (
-                      <a key={link.page} href="#" onClick={(e) => { e.preventDefault(); navigate(link.page); setMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#72975d] transition-colors">
-                        {link.name}
-                      </a>
-                    ))}
-                     {isLoggedIn ? (
-                        <a href="#" onClick={(e) => {e.preventDefault(); handleLogout(); setMenuOpen(false);}} className="block px-3 py-2 rounded-md text-base font-medium bg-red-500 hover:bg-red-600 transition-colors">Logout</a>
-                    ) : (
-                        <>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('login'); setMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#72975d] transition-colors">Login</a>
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('register'); setMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#72975d] transition-colors">Register</a>
-                        </>
-                    )}
-                  </nav>
-                )}
-              </div>
-            </header>
-          );
-        };
-
-        // --- Footer Component ---
-        const Footer = () => (
-          <footer className="bg-[#87A96B] text-white text-center p-4 mt-auto w-full">
-            <p>&copy; 2025 WDPFT. All rights reserved. This is a prototype for demonstration purposes.</p>
-          </footer>
-        );
-
-        // --- Page Components ---
-
-        // Home Page
-        const Home = ({ navigate }) => (
-          <div className="container mx-auto space-y-12">
-            <section className="hero bg-white p-8 rounded-xl shadow-lg text-center">
-              <h2 className="text-4xl font-extrabold text-gray-800 mb-4">Welcome to WDPFT</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">Your financial safety net for retirement. Whether you're living off Social Security, a pension, or savings, we help you manage, invest, and secure your golden years.</p>
-              <ActionButton onClick={() => navigate('survey')}>Start Your Survey</ActionButton>
             </section>
 
-            <section>
-              <h2 className="text-3xl font-bold text-center mb-2">Why WDPFT?</h2>
-               <p className="text-center text-gray-600 max-w-3xl mx-auto mb-8">We created WDPFT because so many seniors reach retirement unprepared — not because they failed, but because life is unpredictable. Medical expenses, family emergencies, or simply low wages during working years can leave many without enough for the years ahead. WDPFT helps you pick up from here. You'll learn how to make the most of what you have, reduce financial stress, and build peace of mind — one simple step at a time.</p>
+            <!-- Featured Content -->
+            <section class="mb-16">
+                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Featured Resources</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-4">🎥 Introduction Video</h3>
+                            <video controls class="w-full rounded-lg mb-4">
+                                <source src="ai_avatar_video/AILP3 Intro.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <p class="text-gray-300">Watch our introduction to the AILP3 program and discover how AI literacy empowers communities.</p>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-4">🎧 Podcast Episode</h3>
+                            <audio controls class="w-full mb-4">
+                                <source src="ai_podcasts/TheHiddenGeniusProject_EmpoweringYouthinAI.wav" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                            <p class="text-gray-300">Listen to insights about empowering youth through AI education and responsible technology use.</p>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <section>
-              <h2 className="text-3xl font-bold text-center mb-8">What You'll Get</h2>
-              <div className="features flex flex-wrap justify-center gap-6">
-                <FeatureBox title="Personalized Survey">We learn about your background and comfort with money to build a plan that fits your needs, not someone else's.</FeatureBox>
-                <FeatureBox title="Safe Investment Options">Invest in low-risk, sustainable options like government bonds, high-yield savings, and ETFs — all explained simply.</FeatureBox>
-                <FeatureBox title="Financial Education">Access easy-to-follow guides, examples, and definitions that help you understand your options without the jargon.</FeatureBox>
-                <FeatureBox title="Wealth Check-Ins">Every two weeks, you'll get a gentle reminder to review your money and adjust your strategy, so you're never in the dark.</FeatureBox>
-              </div>
+            <!-- Interactive Demos -->
+            <section class="mb-16">
+                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Interactive Experiences</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Atlanta Chronicles</h3>
+                            <p class="text-gray-300 mb-4">Explore Atlanta's tech scene through interactive storytelling and community connections.</p>
+                            <a href="atl_chronicles/atl_chronicles.html" class="text-amber-400 hover:text-amber-300 font-semibold">Enter Chronicles →</a>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl card-hover transition-all border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Earth Visualization</h3>
+                            <p class="text-gray-300 mb-4">Experience global connectivity and data flow through interactive 3D visualization.</p>
+                            <a href="earth.html" class="text-amber-400 hover:text-amber-300 font-semibold">Explore Earth →</a>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <section>
-              <h2 className="text-3xl font-bold text-center mb-8">What Our Users Say</h2>
-              <div className="testimonials flex flex-wrap justify-center gap-6">
-                <div className="flex-1 min-w-[280px] bg-white p-6 rounded-lg shadow-md italic">
-                  <p>"I always thought I was too late to start investing. WDPFT gave me hope — and real options. I sleep better at night now."</p>
-                  <p className="font-bold text-right mt-2 not-italic">– Lillian M., 72</p>
+            <!-- Mission Statement -->
+            <section class="mb-16">
+                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30 text-center">
+                    <h2 class="text-3xl font-bold mb-6 text-amber-400">Our Mission</h2>
+                    <blockquote class="text-xl italic text-amber-200 mb-4">
+                        "You have hidden genius within you. Today, we reveal it through technology and leadership."
+                    </blockquote>
+                    <p class="text-lg text-gray-300 max-w-4xl mx-auto">
+                        The Hidden Genius Project is transforming the lives of young Black males by providing technology training, 
+                        leadership development, and career opportunities. Through our AI literacy initiatives, we're preparing 
+                        the next generation to not just use technology, but to lead and shape it.
+                    </p>
                 </div>
-                <div className="flex-1 min-w-[280px] bg-white p-6 rounded-lg shadow-md italic">
-                  <p>"I had no idea what an ETF was, but the app explained it like I was talking to a friend. Now I feel in control of my savings."</p>
-                  <p className="font-bold text-right mt-2 not-italic">– Roger T., 67</p>
-                </div>
-                <div className="flex-1 min-w-[280px] bg-white p-6 rounded-lg shadow-md italic">
-                  <p>"WDPFT feels like it was made just for me. The budgeting tool alone changed the way I spend."</p>
-                  <p className="font-bold text-right mt-2 not-italic">– Cynthia R., 70</p>
-                </div>
-              </div>
             </section>
 
-            <section className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Get Started Today</h2>
-              <p className="text-lg text-gray-600 mb-6">It's never too late to plan smarter. Take our short survey and unlock your personalized financial roadmap.</p>
-              <ActionButton onClick={() => navigate('survey')}>Take the Survey</ActionButton>
+            <!-- Partnership -->
+            <section class="mb-16">
+                <div class="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-amber-500/30">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-amber-400">Powered by Community</h2>
+                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Education</h3>
+                            <p class="text-gray-300">Comprehensive AI literacy curriculum designed for young leaders</p>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Community</h3>
+                            <p class="text-gray-300">Building networks of support and mentorship for sustained growth</p>
+                        </div>
+                        
+                        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30">
+                            <h3 class="text-xl font-bold text-amber-400 mb-3">Innovation</h3>
+                            <p class="text-gray-300">Creating solutions that serve and uplift our communities</p>
+                        </div>
+                    </div>
+                </div>
             </section>
-          </div>
-        );
+        </main>
 
-        // Survey Page
-        const Survey = () => {
-          const [result, setResult] = useState('');
-          const [age, setAge] = useState('');
-          const [income, setIncome] = useState('');
-          const [familiarity, setFamiliarity] = useState('');
-          const [goal, setGoal] = useState('');
-
-          const handleSubmit = (e) => {
-            e.preventDefault();
-
-            let message = [];
-
-            // Investment familiarity advice
-            if (familiarity === 'none') message.push('Since you\'re new to investing, a great place to start is our Beginner's Guide. We recommend exploring low-risk ETFs or savings bonds.');
-            else if (familiarity === 'some') message.push('You're halfway there! We suggest looking into dividend funds and safe ETFs to build on your knowledge.');
-            else message.push('With your experience, you could explore tax-deferred growth options and diversified portfolios for long-term stability.');
-
-            // Income-based advice
-            if (income === 'ss') message.push('When relying on Social Security, careful budgeting is key. Our income tracking tool can help you manage your funds effectively.');
-            else if (income === 'pension') message.push('Your pension provides a solid base. Let's help you grow that buffer with safe investments.');
-            else if (income === 'savings') message.push('Your savings should work for you. We can help you learn to invest safely and consistently.');
-            else message.push('Let's build toward financial independence with strategies that generate safe and reliable cash flow.');
-
-            // Goal-specific guidance
-            if (goal === 'stretch') message.push('Use our Budgeting Assistant to stretch every dollar, without stress.');
-            else if (goal === 'grow') message.push('Check out our Growth Path tool to invest in balanced, compounding assets.');
-            else message.push('Capital preservation is key. Start with our Safe Holdings strategies to protect your wealth.');
-
-            setResult(message);
-          };
-
-          return (
-            <div className="container mx-auto max-w-3xl">
-              <h2 className="text-3xl font-bold mb-6 text-center">Tell Us About You</h2>
-              <div className="bg-white p-8 rounded-xl shadow-lg space-y-6">
-                <div>
-                  <label htmlFor="age" className="block text-lg font-medium text-gray-700 mb-2">What is your age range?</label>
-                  <select id="age" value={age} onChange={(e) => setAge(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#87A96B] focus:border-[#87A96B]">
-                    <option value="">--Select--</option>
-                    <option value="60-65">60-65</option>
-                    <option value="66-70">66-70</option>
-                    <option value="71+">71+</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="income" className="block text-lg font-medium text-gray-700 mb-2">Main source of income:</label>
-                  <select id="income" value={income} onChange={(e) => setIncome(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#87A96B] focus:border-[#87A96B]">
-                    <option value="">--Select--</option>
-                    <option value="ss">Social Security</option>
-                    <option value="pension">Pension</option>
-                    <option value="savings">Personal Savings</option>
-                    <option value="family">Family Support</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-lg font-medium text-gray-700 mb-2">How familiar are you with investing?</label>
-                  <div className="space-y-2">
-                    <label className="flex items-center"><input type="radio" name="familiarity" value="none" checked={familiarity === 'none'} onChange={(e) => setFamiliarity(e.target.value)} className="h-4 w-4 text-[#87A96B] focus:ring-[#72975d] border-gray-300" /> <span className="ml-3 text-gray-700">Not familiar</span></label>
-                    <label className="flex items-center"><input type="radio" name="familiarity" value="some" checked={familiarity === 'some'} onChange={(e) => setFamiliarity(e.target.value)} className="h-4 w-4 text-[#87A96B] focus:ring-[#72975d] border-gray-300" /> <span className="ml-3 text-gray-700">Somewhat familiar</span></label>
-                    <label className="flex items-center"><input type="radio" name="familiarity" value="very" checked={familiarity === 'very'} onChange={(e) => setFamiliarity(e.target.value)} className="h-4 w-4 text-[#87A96B] focus:ring-[#72975d] border-gray-300" /> <span className="ml-3 text-gray-700">Very familiar</span></label>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="goal" className="block text-lg font-medium text-gray-700 mb-2">What is your primary financial goal?</label>
-                  <select id="goal" value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#87A96B] focus:border-[#87A96B]">
-                    <option value="">--Select--</option>
-                    <option value="stretch">Stretch my monthly income</option>
-                    <option value="grow">Grow my savings</option>
-                    <option value="preserve">Preserve wealth</option>
-                  </select>
-                </div>
-                <div className="text-center">
-                  <ActionButton onClick={handleSubmit}>Submit Survey</ActionButton>
-                </div>
-              </div>
-
-              {result && (
-                <div className="mt-8 bg-green-50 border-l-4 border-green-500 p-6 rounded-lg shadow-lg">
-                  <h3 className="text-2xl font-bold text-green-800 mb-4">Your Personalized Financial Plan</h3>
-                  <ul className="list-disc list-inside space-y-2 text-green-700">
-                    {result.map((item, index) => <li key={index}>{item}</li>)}
-                  </ul>
-                   <p className="font-bold mt-4 text-green-800"><strong>Remember:</strong> The first step is awareness. You've already taken it.</p>
-                </div>
-              )}
+        <!-- Footer -->
+        <footer class="text-center text-gray-400 mt-16">
+            <div class="border-t border-amber-500/30 pt-8">
+                <p class="mb-2">© 2024 Hidden Genius Project & GData Labs. All rights reserved.</p>
+                <p class="text-sm">Empowering the next generation of tech leaders through AI literacy and community engagement.</p>
             </div>
-          );
-        };
-
-        // Invest Page
-        const Invest = ({ navigate }) => (
-            <div className="container mx-auto max-w-4xl space-y-10">
-                <section className="text-center">
-                    <h2 className="text-3xl font-bold mb-4">Start Where You Are</h2>
-                    <p className="text-lg text-gray-600">Investing doesn't have to be scary. Here, we break it down into safe, simple, and stable options for seniors. No risky crypto or day-trading. Just solid, time-tested ways to make your money last longer.</p>
-                </section>
-
-                <section>
-                    <h2 className="text-2xl font-bold mb-4">Low-Risk Investment Options</h2>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <InfoBox>
-                            <h3 className="font-bold text-xl mb-2">1. Government Bonds</h3>
-                            <p>Backed by the U.S. Treasury, bonds are among the safest ways to protect your money while earning a little interest. Great for long-term security.</p>
-                        </InfoBox>
-                        <InfoBox>
-                            <h3 className="font-bold text-xl mb-2">2. High-Yield Savings Accounts</h3>
-                            <p>FDIC-insured, these accounts offer better interest than traditional savings, with zero risk of loss.</p>
-                        </InfoBox>
-                        <InfoBox>
-                            <h3 className="font-bold text-xl mb-2">3. Dividend-Paying ETFs</h3>
-                            <p>These are investment funds that pay you regular income, often every quarter. Think of them as steady income generators.</p>
-                        </InfoBox>
-                    </div>
-                </section>
-
-                <section>
-                    <h2 className="text-2xl font-bold mb-4">Moderate-Growth Options</h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                         <InfoBox>
-                            <h3 className="font-bold text-xl mb-2">4. Balanced Mutual Funds</h3>
-                            <p>These invest in both stocks and bonds, balancing growth with safety. They're automatically managed for you — perfect for "hands-off" investing.</p>
-                        </InfoBox>
-                        <InfoBox>
-                            <h3 className="font-bold text-xl mb-2">5. Blue Chip Stocks</h3>
-                            <p>Think Coca-Cola, Johnson & Johnson, or Microsoft. These stable companies tend to perform well over time and pay dividends.</p>
-                        </InfoBox>
-                    </div>
-                </section>
-
-                <section className="bg-white p-6 rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-4">Quick Tips & Next Steps</h2>
-                    <ul className="list-disc list-inside space-y-2 mb-6">
-                        <li>Only invest money you won't need for at least 6–12 months.</li>
-                        <li>Don't put all your eggs in one basket — diversify!</li>
-                        <li>Focus on consistency, not speed. You're investing to preserve, not gamble.</li>
-                    </ul>
-                    <div className="flex flex-wrap gap-4 items-center justify-center">
-                        <p className="text-gray-700">Ready for a personalized plan? </p>
-                        <ActionButton onClick={() => navigate('survey')} className="px-4 py-2">Take Our Survey</ActionButton>
-                    </div>
-                     <div className="mt-6 text-center p-4 bg-green-50 rounded-lg">
-                        <h3 className="text-xl font-bold mb-2">💡 Want Hands-Free Investing?</h3>
-                        <p className="mb-4">If you'd rather skip the learning and let us handle your investing automatically, try our Auto-Invest system.</p>
-                        <ActionButton onClick={() => navigate('auto_invest')}>Try Auto-Invest</ActionButton>
-                    </div>
-                </section>
-            </div>
-        );
-
-        // Education Page
-        const Education = ({ navigate }) => (
-            <div className="container mx-auto max-w-4xl space-y-10">
-                <section className="text-center">
-                    <h2 className="text-3xl font-bold mb-4">Welcome to Your Learning Hub</h2>
-                    <p className="text-lg text-gray-600">We believe financial confidence comes from clarity. Whether you're a total beginner or just brushing up, this is your place to learn at your pace — no judgment, no jargon.</p>
-                </section>
-
-                <InfoBox>
-                    <h3 className="text-2xl font-bold mb-3">💸 Budgeting on a Fixed Income</h3>
-                    <p className="mb-4">When income doesn't grow but costs do, budgeting is your best friend. Here's how to get started:</p>
-                    <ul className="list-disc list-inside space-y-2">
-                        <li>List all monthly income (SS, pension, help from family, etc.)</li>
-                        <li>Track every expense for 30 days (use pen and paper or a phone app)</li>
-                        <li>Separate needs (housing, medication) from wants (subscriptions, snacks)</li>
-                        <li>Use the 50/30/20 rule as a guide, if possible</li>
-                        <li>Revisit your spending weekly, not yearly</li>
-                    </ul>
-                </InfoBox>
-
-                <InfoBox>
-                    <h3 className="text-2xl font-bold mb-3">📈 Understanding Investments</h3>
-                    <p className="mb-4">Investing isn't just for Wall Street. It's for everyone — including you.</p>
-                    <ul className="list-disc list-inside space-y-2">
-                        <li><strong>Stocks:</strong> Pieces of companies. Some pay dividends (income).</li>
-                        <li><strong>Bonds:</strong> You lend money to a company/government. They pay you back with interest.</li>
-                        <li><strong>ETFs:</strong> Baskets of investments (less risky than a single stock).</li>
-                        <li><strong>Mutual Funds:</strong> Managed by professionals, diversified automatically.</li>
-                    </ul>
-                </InfoBox>
-                
-                <InfoBox>
-                    <h3 className="text-2xl font-bold mb-3">🛡️ Spotting and Avoiding Scams</h3>
-                    <p className="mb-4">Seniors are targeted more than any other age group. Here's how to protect yourself:</p>
-                    <ul className="list-disc list-inside space-y-2">
-                        <li>Never give out your Social Security number or banking info over the phone</li>
-                        <li>Hang up on anyone asking for gift cards or wire transfers</li>
-                        <li>If it sounds urgent or scary, it's probably a scam</li>
-                        <li>Ask someone you trust if you're ever unsure</li>
-                    </ul>
-                </InfoBox>
-
-                <InfoBox>
-                    <h3 className="text-2xl font-bold mb-3">🔗 Trusted Sources</h3>
-                    <ul className="space-y-2">
-                        <li><a href="https://www.aarp.org/money/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">AARP Money & Retirement</a></li>
-                        <li><a href="https://www.investor.gov/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">U.S. SEC Investor Education</a></li>
-                        <li><a href="https://www.consumerfinance.gov/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Consumer Financial Protection Bureau</a></li>
-                    </ul>
-                </InfoBox>
-
-                <div className="text-center">
-                    <p className="text-lg">Ready to apply what you've learned?</p>
-                    <ActionButton onClick={() => navigate('invest')}>Explore Investment Options</ActionButton>
-                </div>
-            </div>
-        );
-
-        // CheckIn Page
-        const CheckIn = () => {
-            const [log, setLog] = useState('');
-            const [message, setMessage] = useState('');
-
-            const handleSave = () => {
-                console.log("Saved log:", log);
-                setMessage('Log saved successfully!');
-                setTimeout(() => setMessage(''), 3000);
-            };
-            
-            const handleReminder = () => {
-                setMessage('Reminder set for 14 days from now!');
-                setTimeout(() => setMessage(''), 3000);
-            }
-
-            return (
-                <div className="container mx-auto max-w-3xl space-y-8">
-                    <section className="text-center">
-                        <h2 className="text-3xl font-bold mb-4">Bi-Weekly Wealth Check-In</h2>
-                        <p className="text-lg text-gray-600">It's time to review how you're doing. These check-ins keep you aware, alert, and in charge of your financial future. Small steps, steady growth.</p>
-                    </section>
-
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">🧾 Review This Week</h3>
-                        <ul className="list-disc list-inside space-y-2">
-                            <li>Did I track my spending?</li>
-                            <li>Did I avoid any unnecessary purchases?</li>
-                            <li>Did I add to savings or investments?</li>
-                            <li>Did I experience any financial stress?</li>
-                        </ul>
-                         <p className="mt-4 font-semibold">Be honest with yourself — growth starts with reflection.</p>
-                    </InfoBox>
-                    
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">✍️ Reflection Log</h3>
-                        <label htmlFor="journal" className="block text-gray-700 mb-2">Write anything you noticed, learned, or struggled with:</label>
-                        <textarea 
-                            id="journal" 
-                            value={log}
-                            onChange={(e) => setLog(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg h-32 focus:ring-[#87A96B] focus:border-[#87A96B]"
-                            placeholder="Example: I overspent on groceries. I plan to use coupons next time."
-                        ></textarea>
-                        <ActionButton onClick={handleSave} className="mt-4">Save Log</ActionButton>
-                    </InfoBox>
-
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">⏰ Set Your Next Check-In</h3>
-                        <p className="mb-4">We recommend checking in every 14 days to stay on track.</p>
-                        <ActionButton onClick={handleReminder}>Set Reminder</ActionButton>
-                    </InfoBox>
-
-                    {message && <div className="text-center p-3 bg-green-200 text-green-800 rounded-lg">{message}</div>}
-                </div>
-            );
-        };
-
-        // AutoInvest Page
-        const AutoInvest = () => {
-            const [invested, setInvested] = useState(0);
-            const [currentValue, setCurrentValue] = useState(0);
-            const [log, setLog] = useState([]);
-            const [isAutoEnabled, setIsAutoEnabled] = useState(true);
-
-            const addLog = (msg) => {
-                setLog(prevLog => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prevLog]);
-            };
-
-            const simulateTransaction = () => {
-                if (!isAutoEnabled) {
-                    addLog("Automation is turned off. No investment made.");
-                    return;
-                }
-
-                const investAmount = (10 + Math.random() * 10);
-                const newInvested = invested + investAmount;
-                setInvested(newInvested);
-                setCurrentValue(newInvested);
-                addLog(`Withdrew ${investAmount.toFixed(2)} for investment.`);
-
-                setTimeout(() => simulateMarketMovement(newInvested), 3000);
-            };
-
-            const simulateMarketMovement = (currentInvestedAmount) => {
-                const changePercent = (Math.random() * 10 - 5);
-                const changeAmount = currentValue * (changePercent / 100);
-                const newCurrentValue = currentValue + changeAmount;
-                setCurrentValue(newCurrentValue);
-                addLog(`Market moved ${changePercent.toFixed(2)}%. Current value: ${newCurrentValue.toFixed(2)}`);
-
-                const gainLossRatio = (newCurrentValue - currentInvestedAmount) / currentInvestedAmount;
-
-                if (isAutoEnabled && Math.abs(gainLossRatio) >= 0.03) {
-                    addLog(`Auto-sell triggered at ${gainLossRatio > 0 ? 'gain' : 'loss'} of ${(gainLossRatio * 100).toFixed(2)}%. Final return: ${newCurrentValue.toFixed(2)}`);
-                    setInvested(0);
-                    setCurrentValue(0);
-                }
-            };
-
-            return (
-                <div className="container mx-auto max-w-3xl space-y-8">
-                    <h2 className="text-3xl font-bold text-center">Auto-Invest System (Simulation)</h2>
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">🔁 Auto-Investing</h3>
-                        <label className="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" checked={isAutoEnabled} onChange={() => setIsAutoEnabled(!isAutoEnabled)} className="h-5 w-5 rounded text-[#87A96B] focus:ring-[#72975d]"/>
-                            <span className="text-lg">Enable Automatic Investing</span>
-                        </label>
-                        <p className="mt-2 text-gray-600">This system will automatically withdraw funds, buy stock, and sell based on 3%–5% gain/loss triggers.</p>
-                    </InfoBox>
-
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">💳 Debit Card Activity</h3>
-                        <p className="mb-4">We'll track your spending and invest small amounts after each transaction.</p>
-                        <div className="flex flex-wrap gap-4">
-                            <ActionButton onClick={simulateTransaction}>Simulate $50 Grocery Purchase</ActionButton>
-                            <ActionButton onClick={simulateTransaction}>Simulate $100 Gas Fill-Up</ActionButton>
-                        </div>
-                    </InfoBox>
-
-                    <InfoBox>
-                        <h3 className="text-2xl font-bold mb-3">📈 Investment Tracker</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                            <div>
-                                <p className="text-gray-500">Invested Amount</p>
-                                <p className="text-2xl font-bold">${invested.toFixed(2)}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-500">Current Value</p>
-                                <p className="text-2xl font-bold">${currentValue.toFixed(2)}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-500">Status</p>
-                                <p className="text-2xl font-bold">{invested > 0 ? 'Active' : 'No Holdings'}</p>
-                            </div>
-                        </div>
-                        <div className="mt-6">
-                            <h4 className="font-semibold mb-2">Activity Log:</h4>
-                            <div className="bg-gray-100 p-3 rounded-lg h-48 overflow-y-auto text-sm font-mono">
-                                {log.map((entry, i) => <p key={i}>{entry}</p>)}
-                            </div>
-                        </div>
-                    </InfoBox>
-                </div>
-            );
-        };
-
-        // CharlieAI Page
-        const CharlieAI = () => {
-            const [messages, setMessages] = useState([{ text: "Hello! I'm Charlie, your AI financial assistant. Ask me anything about budgeting, saving, or safe investing for retirement.", sender: 'ai' }]);
-            const [input, setInput] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            const chatEndRef = useRef(null);
-
-            const demoResponses = {
-                budget: "Budgeting on a fixed income requires careful planning. Start by listing all your monthly income sources, then track every expense. The 50/30/20 rule can be adapted - aim for 50% on needs, 30% on wants (but be flexible), and 20% for savings if possible. Would you like me to help you create a simple budget template?",
-                
-                invest: "For seniors, I recommend focusing on low-risk investments. Government bonds are very safe and provide steady income. High-yield savings accounts are FDIC-insured up to $250,000. Dividend-paying ETFs can provide regular quarterly income. Remember: only invest money you won't need for at least 6-12 months. What type of investment interests you most?",
-                
-                etf: "An ETF (Exchange-Traded Fund) is like a basket of investments you can buy all at once. Think of it like buying a fruit basket instead of individual fruits. ETFs spread your money across many companies, which reduces risk. They're traded on the stock market like regular stocks, but they're generally safer because they're diversified. Many ETFs also pay dividends, giving you regular income.",
-                
-                scam: "Great question! Protecting yourself from scams is crucial. Red flags include: urgent requests for money, asking for gift cards or wire transfers, threats about Social Security or Medicare, and unsolicited calls asking for personal information. Remember: the government will never call demanding immediate payment. If you're unsure about something, hang up and call the organization directly using a number you trust.",
-                
-                social: "Social Security benefits are an important part of retirement income. You can start collecting as early as age 62, but your monthly benefit will be permanently reduced. Waiting until your full retirement age (66-67 for most) gives you 100% of your benefit. Delaying until age 70 increases your benefit by about 8% per year. The best choice depends on your health, other income sources, and financial needs.",
-                
-                save: "Even on a tight budget, small savings add up! Try the 'pay yourself first' approach - save even $10-20 when you get your monthly income. Look for senior discounts everywhere. Consider generic brands at the grocery store. Review subscriptions you might not need. Many utilities offer budget billing to even out costs. Every dollar saved is a victory!",
-                
-                start: "It's never too late to improve your financial situation! Start with our survey to understand your current position. Then, focus on one area at a time - maybe budgeting first, then learning about safe investments. Remember, you don't need lots of money to begin. Even understanding your finances better is a huge first step. What would you like to tackle first?",
-                
-                default: "That's a great question! While I can provide general guidance about retirement finances, budgeting, and safe investments, I'd need more specific information to give you the most helpful answer. Could you tell me more about what aspect of retirement planning you're interested in? For example, are you curious about budgeting, investing, Social Security, or avoiding scams?"
-            };
-
-            const getResponse = (userInput) => {
-                const lowercaseInput = userInput.toLowerCase();
-                
-                if (lowercaseInput.includes('budget') || lowercaseInput.includes('expense') || lowercaseInput.includes('spending')) {
-                    return demoResponses.budget;
-                } else if (lowercaseInput.includes('invest') || lowercaseInput.includes('stock') || lowercaseInput.includes('bond')) {
-                    return demoResponses.invest;
-                } else if (lowercaseInput.includes('etf') || lowercaseInput.includes('fund')) {
-                    return demoResponses.etf;
-                } else if (lowercaseInput.includes('scam') || lowercaseInput.includes('fraud') || lowercaseInput.includes('protect')) {
-                    return demoResponses.scam;
-                } else if (lowercaseInput.includes('social security') || lowercaseInput.includes('ss') || lowercaseInput.includes('benefits')) {
-                    return demoResponses.social;
-                } else if (lowercaseInput.includes('save') || lowercaseInput.includes('saving') || lowercaseInput.includes('money')) {
-                    return demoResponses.save;
-                } else if (lowercaseInput.includes('start') || lowercaseInput.includes('begin') || lowercaseInput.includes('how do i')) {
-                    return demoResponses.start;
-                } else {
-                    return demoResponses.default;
-                }
-            };
-
-            useEffect(() => {
-                chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            }, [messages]);
-
-            const handleSend = async () => {
-                if (!input.trim() || isLoading) return;
-
-                const userMessage = { text: input, sender: 'user' };
-                setMessages(prev => [...prev, userMessage]);
-                const currentInput = input;
-                setInput('');
-                setIsLoading(true);
-
-                setTimeout(() => {
-                    const response = getResponse(currentInput);
-                    setMessages(prev => [...prev, { text: response, sender: 'ai' }]);
-                    setIsLoading(false);
-                }, 1500);
-            };
-
-            return (
-                <div className="container mx-auto max-w-2xl">
-                    <h2 className="text-3xl font-bold text-center mb-6">Chat with Charlie AI</h2>
-                    <div className="bg-white rounded-xl shadow-lg p-4 flex flex-col h-[70vh]">
-                        <div className="flex-grow overflow-y-auto pr-2 space-y-4">
-                            {messages.map((msg, index) => (
-                                <div key={index} className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-[#87A96B] flex-shrink-0"></div>}
-                                    <div className={`max-w-xs md:max-w-md p-3 rounded-2xl ${msg.sender === 'user' ? 'bg-[#87A96B] text-white rounded-br-none' : 'bg-gray-200 text-gray-800 rounded-bl-none'}`}>
-                                        <p style={{whiteSpace: "pre-wrap"}}>{msg.text}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            {isLoading && (
-                                 <div className="flex items-end gap-2 justify-start">
-                                    <div className="w-8 h-8 rounded-full bg-[#87A96B] flex-shrink-0"></div>
-                                    <div className="max-w-xs md:max-w-md p-3 rounded-2xl bg-gray-200 text-gray-800 rounded-bl-none">
-                                        <div className="flex items-center space-x-1">
-                                            <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
-                                            <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse delay-75"></span>
-                                            <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse delay-150"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={chatEndRef} />
-                        </div>
-                        <div className="mt-4 flex gap-2">
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Ask Charlie something..."
-                                className="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-[#87A96B] focus:border-[#87A96B]"
-                                disabled={isLoading}
-                            />
-                            <ActionButton onClick={handleSend} disabled={isLoading}>
-                                {isLoading ? '...' : 'Send'}
-                            </ActionButton>
-                        </div>
-                    </div>
-                    <div className="mt-4 bg-blue-50 p-4 rounded-lg">
-                        <p className="text-sm text-blue-800">
-                            <strong>Demo Mode:</strong> Charlie is currently running in demo mode with pre-programmed responses. Try asking about budgeting, investing, ETFs, scams, Social Security, or saving money!
-                        </p>
-                    </div>
-                </div>
-            );
-        };
-
-        // Login Page
-        const Login = ({ navigate, onLogin, users }) => {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-
-            const handleLogin = (e) => {
-                if (e) e.preventDefault();
-                
-                if (email && password) {
-                    setError('');
-                    onLogin();
-                    navigate('home');
-                } else {
-                    setError('Please enter both email and password.');
-                }
-            };
-
-            return (
-                <div className="container mx-auto max-w-sm">
-                    <h2 className="text-3xl font-bold text-center mb-6">Login to WDPFT</h2>
-                    <div className="bg-white p-8 rounded-xl shadow-lg space-y-4">
-                        {error && <p className="text-red-500 bg-red-100 p-3 rounded-lg">{error}</p>}
-                        <div>
-                            <label className="block text-gray-700 mb-1">Email</label>
-                            <input 
-                                type="email" 
-                                value={email} 
-                                onChange={e => setEmail(e.target.value)} 
-                                placeholder="you@example.com" 
-                                className="w-full p-3 border border-gray-300 rounded-lg" />
-                        </div>
-                        <div>
-                            <label className="block text-gray-700 mb-1">Password</label>
-                            <input 
-                                type="password" 
-                                value={password} 
-                                onChange={e => setPassword(e.target.value)} 
-                                placeholder="••••••••" 
-                                className="w-full p-3 border border-gray-300 rounded-lg" />
-                        </div>
-                        <ActionButton onClick={handleLogin} className="w-full">Login</ActionButton>
-                        <p className="text-center text-sm pt-2">
-                            Don't have an account?{' '}
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('register'); }} className="text-blue-600 hover:underline">Register here</a>
-                        </p>
-                    </div>
-                    <div className="mt-4 bg-blue-50 p-4 rounded-lg text-center">
-                        <p className="text-sm text-blue-800">
-                            <strong>Demo Mode:</strong> Enter any email and password to login.
-                        </p>
-                    </div>
-                </div>
-            );
-        };
-
-        // Register Page
-        const Register = ({ navigate, setUsers, users }) => {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-
-            const handleRegister = () => {
-                if (email && password) {
-                    setError('');
-                    alert('Registration successful! Please log in.');
-                    navigate('login');
-                } else {
-                    setError('Please fill in all fields.');
-                }
-            };
-
-            return (
-                <div className="container mx-auto max-w-sm">
-                    <h2 className="text-3xl font-bold text-center mb-6">Register for WDPFT</h2>
-                    <div className="bg-white p-8 rounded-xl shadow-lg space-y-4">
-                        {error && <p className="text-red-500 bg-red-100 p-3 rounded-lg">{error}</p>}
-                        <div>
-                            <label className="block text-gray-700 mb-1">Email</label>
-                            <input 
-                                type="email" 
-                                value={email} 
-                                onChange={e => setEmail(e.target.value)} 
-                                placeholder="you@example.com" 
-                                className="w-full p-3 border border-gray-300 rounded-lg" />
-                        </div>
-                        <div>
-                            <label className="block text-gray-700 mb-1">Password</label>
-                            <input 
-                                type="password" 
-                                value={password} 
-                                onChange={e => setPassword(e.target.value)} 
-                                placeholder="Choose a strong password" 
-                                className="w-full p-3 border border-gray-300 rounded-lg" />
-                        </div>
-                        <ActionButton onClick={handleRegister} className="w-full">Register</ActionButton>
-                         <p className="text-center text-sm pt-2">
-                            Already have an account?{' '}
-                            <a href="#" onClick={(e) => { e.preventDefault(); navigate('login'); }} className="text-blue-600 hover:underline">Login here</a>
-                        </p>
-                    </div>
-                </div>
-            );
-        };
-
-        // Render the App
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
+        </footer>
+    </div>
 </body>
 </html>
